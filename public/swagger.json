@@ -1,0 +1,343 @@
+{
+ "swagger": "2.0",
+ "info": {
+  "title": "Analytics Server REST API",
+  "description": "H2020 Ferroamp Analytics Server REST API.",
+  "version": "0.1.1 / 2016-10-04"
+ },
+ "host": "localhost:10010",
+ "schemes": [
+  "http"
+ ],
+ "basePath": "/analytics/v0_1_1",
+ "produces": [
+  "application/json"
+ ],
+ "paths": {
+  "/poweranalysisday": {
+   "x-swagger-router-controller": "poweranalysisday",
+   "post": {
+    "summary": "The endpoint used to start new 'Power Analysis Day' analysis jobs.",
+    "description": "Posting an analysis request to this endpoint puts a new analysis job up for execution and either returns the result directly, or returns a receipt key (resultsid) that should be used to request the result later when available.",
+    "operationId": "make_poweranalysisday_analysis",
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "$ref": "#/parameters/testQParam"
+     },
+     {
+      "name": "analysisparams",
+      "in": "body",
+      "schema": {
+       "$ref": "#/definitions/PowerAnalysisRequest"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK - Analysis result available.",
+      "schema": {
+       "$ref": "#/definitions/PowerAnalysisDayResultData"
+      }
+     },
+     "201": {
+      "description": "CREATED - A receipt for an analysis result, contains unique id and link to where the result will be available.",
+      "schema": {
+       "$ref": "#/definitions/PowerAnalysisResultMetadata"
+      }
+     },
+     "default": {
+      "$ref": "#/responses/DefaultErrorResponse"
+     }
+    }
+   }
+  },
+  "/poweranalysisday/{resultsid}": {
+   "x-swagger-router-controller": "poweranalysisday",
+   "get": {
+    "summary": "The endpoint used to check the status and get the results of a specific analysis job.",
+    "description": "This endpoint is used for Power Analysis Day.",
+    "operationId": "get_poweranalysisday_result",
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "$ref": "#/parameters/testQParam"
+     },
+     {
+      "$ref": "#/parameters/resultsidQParam"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK - Analysis result available.",
+      "schema": {
+       "$ref": "#/definitions/PowerAnalysisDayResultData"
+      }
+     },
+     "400": {
+      "$ref": "#/responses/ErrorResponse400"
+     },
+     "404": {
+      "description": "Not found - Analysis result does not exist due to an unknown resultsid or that the analysis process is not yet completed.",
+      "schema": {
+       "$ref": "#/definitions/AnalysisResultsMetaData"
+      }
+     },
+     "410": {
+      "description": "Gone - Analysis result has expired and is no longer available.",
+      "schema": {
+       "$ref": "#/definitions/AnalysisResultsMetaData"
+      }
+     },
+     "500": {
+      "$ref": "#/responses/ErrorResponse500"
+     },
+     "default": {
+      "$ref": "#/responses/DefaultErrorResponse"
+     }
+    }
+   }
+  }
+ },
+ "definitions": {
+  "PowerAnalysisRequest": {
+   "type": "object",
+   "properties": {
+    "energyhubid": {
+     "type": "string",
+     "description": "Unique id of energy hub unit."
+    },
+    "starttime": {
+     "type": "string",
+     "format": "date-time",
+     "description": "Start date for analysis. E.g. '2016-05-17T15:28:34Z' (RFC 3339, ISO 8601)"
+    },
+    "endtime": {
+     "type": "string",
+     "format": "date-time",
+     "description": "End date for analysis. E.g. '2016-06-17T15:28:34Z' (RFC 3339, ISO 8601)"
+    },
+    "userid": {
+     "type": "string",
+     "description": "The user that requests the job."
+    }
+   }
+  },
+  "PowerAnalysisResultMetadata": {
+   "allOf": [
+    {
+     "$ref": "#/definitions/PowerAnalysisRequest"
+    },
+    {
+     "$ref": "#/definitions/AnalysisResultsMetaData"
+    }
+   ]
+  },
+  "PowerAnalysisDayResultData": {
+   "allOf": [
+    {
+     "$ref": "#/definitions/PowerAnalysisRequest"
+    },
+    {
+     "$ref": "#/definitions/PowerAnalysisDayResultDataArray"
+    }
+   ]
+  },
+  "PowerAnalysisDayResultDataArray": {
+   "type": "object",
+   "properties": {
+    "data": {
+     "type": "array",
+     "items": {
+      "$ref": "#/definitions/PowerAnalysisDayDatapoint"
+     }
+    }
+   }
+  },
+  "PowerAnalysisDayDatapoint": {
+   "type": "object",
+   "properties": {
+    "ts": {
+     "type": "number",
+     "format": "integer",
+     "description": "Unix time."
+    },
+    "abp": {
+     "type": "number",
+     "format": "float",
+     "description": "Total active base power"
+    },
+    "abpL1": {
+     "type": "number",
+     "format": "float",
+     "description": "L1 active base power"
+    },
+    "abpL2": {
+     "type": "number",
+     "format": "float",
+     "description": "L2 active base power"
+    },
+    "abpL3": {
+     "type": "number",
+     "format": "float",
+     "description": "L3 active base power"
+    },
+    "rbp": {
+     "type": "number",
+     "format": "float",
+     "description": "Total reactive base power"
+    },
+    "rbpL1": {
+     "type": "number",
+     "format": "float",
+     "description": "L1 reactive base power"
+    },
+    "rbpL2": {
+     "type": "number",
+     "format": "float",
+     "description": "L2 reactive base power"
+    },
+    "rbpL3": {
+     "type": "number",
+     "format": "float",
+     "description": "L3 reactive base power"
+    },
+    "aip": {
+     "type": "number",
+     "format": "float",
+     "description": "Total active intermittent power"
+    },
+    "aipL1": {
+     "type": "number",
+     "format": "float",
+     "description": "L1 active intermittent power"
+    },
+    "aipL2": {
+     "type": "number",
+     "format": "float",
+     "description": "L2 active intermittent power"
+    },
+    "aipL3": {
+     "type": "number",
+     "format": "float",
+     "description": "L3 active intermittent power"
+    },
+    "rip": {
+     "type": "number",
+     "format": "float",
+     "description": "Total reactive intermittent power"
+    },
+    "ripL1": {
+     "type": "number",
+     "format": "float",
+     "description": "L1 reactive intermittent power"
+    },
+    "ripL2": {
+     "type": "number",
+     "format": "float",
+     "description": "L2 reactive intermittent power"
+    },
+    "ripL3": {
+     "type": "number",
+     "format": "float",
+     "description": "L3 reactive intermittent power"
+    }
+   }
+  },
+  "AnalysisResultsMetaData": {
+   "type": "object",
+   "required": [
+    "resultsid",
+    "processingstatus"
+   ],
+   "properties": {
+    "resultsid": {
+     "type": "string",
+     "description": "Unique id for the result."
+    },
+    "analysismodel": {
+     "type": "string",
+     "description": "ID for the analysis model.",
+     "enum": [
+      "POWERANALYSISDAY",
+      "POWERANALYSISHOUR",
+      "DAYPROFILE"
+     ]
+    },
+    "processingstatus": {
+     "type": "string",
+     "description": "processing status for the result.",
+     "enum": [
+      "PENDING",
+      "ACTIVE",
+      "COMPLETED",
+      "ERROR",
+      "EXPIRED",
+      "UNKNOWN"
+     ]
+    },
+    "resultslink": {
+     "type": "string",
+     "description": "A url to the location of the result."
+    }
+   }
+  },
+  "DefaultError": {
+   "type": "object",
+   "properties": {
+    "code": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "message": {
+     "type": "string"
+    },
+    "fields": {
+     "type": "string"
+    }
+   }
+  }
+ },
+ "parameters": {
+  "testQParam": {
+   "name": "test",
+   "in": "query",
+   "description": "If present, the request to the endpoint will return a canned response and have no side effects.",
+   "required": false,
+   "type": "boolean",
+   "default": false,
+   "allowEmptyValue": true
+  },
+  "resultsidQParam": {
+   "name": "resultsid",
+   "in": "path",
+   "description": "ID of analysis job to fetch",
+   "required": true,
+   "type": "string"
+  }
+ },
+ "responses": {
+  "DefaultErrorResponse": {
+   "description": "Unexpected error",
+   "schema": {
+    "$ref": "#/definitions/DefaultError"
+   }
+  },
+  "ErrorResponse400": {
+   "description": "Bad Request - The request could not be understood by the server due to malformed syntax. The client SHOULD NOT repeat the request without modifications. This response is given when the the API cannot successfully validate the data submitted accrosding to the API definitions.",
+   "schema": {
+    "$ref": "#/definitions/DefaultError"
+   }
+  },
+  "ErrorResponse500": {
+   "description": "Internal Server Error - The server encountered an unexpected condition which prevented it from fulfilling the request. This is an indication of that the backend could not support the request although the API itself is used correctly.",
+   "schema": {
+    "$ref": "#/definitions/DefaultError"
+   }
+  }
+ }
+}
