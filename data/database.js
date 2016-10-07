@@ -15,8 +15,8 @@
                 else {
                     theDb = {
                         db: db,
-                        poweranalysisdays: db.collection("poweranalysisdays"),
-                        poweranalysisdayjobs: db.collection("poweranalysisdayjobs")
+                        poweranalysisdays: db.collection("test_poweranalysisdays"),
+                        poweranalysisdayjobs: db.collection("test_poweranalysisdayjobs")
                     };
                     next(null, theDb); 
                 }

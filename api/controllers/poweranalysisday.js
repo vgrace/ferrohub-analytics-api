@@ -26,6 +26,8 @@ function get_poweranalysisday_result(req, res, next) {
     
     if (isTest) {
         data.getPowerAnalysisResults(id, function (err, analysisResults) {
+            console.log("------------------------------------------------------------------- >");
+            var resultsData = analysisResults.value; 
             if (err) {
                 //Server error -> 500
                 var err_msg = {
@@ -39,7 +41,7 @@ function get_poweranalysisday_result(req, res, next) {
             else {
                 console.log('------------------------------ FROM MF DB');
 
-               if (analysisResults == null) {
+                if (resultsData == null) {
                var any_response_post = {
                         "energyhubid": "8674654",
                         "starttime": "2016-10-07T07:49:32.762Z",
@@ -64,8 +66,8 @@ function get_poweranalysisday_result(req, res, next) {
                 else {
                     res.set("Content-Type", "application/json");
                     //Object found with results -> 200 TEST: resultsid: a8ee17b35c0019efbb53cdcea88bbca288d59687
-                    if (analysisResults.data.length > 0) {
-                        res.send(analysisResults);
+                    if (resultsData.data.length > 0) {
+                        res.send(resultsData);
                     }
                     else {
                         //No results yet -> 404 TEST: resultsid: f75c2cde1125da1cba8408c942ef712c9648e92a
@@ -73,7 +75,7 @@ function get_poweranalysisday_result(req, res, next) {
                             "resultsid": id,
                             "analysismodel": "POWERANALYSISDAY",
                             "processingstatus": "PENDING",
-                            "resultslink": "/poweranalysisday/" + analysisResults.resultsid
+                            "resultslink": "/poweranalysisday/" + resultsData.resultsid
                         };
                         res.status(404).send(no_res_err);
                     }

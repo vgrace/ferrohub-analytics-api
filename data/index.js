@@ -48,12 +48,12 @@
                 next(err);
             }
             else {
-                db.poweranalysisdays.findOne({ resultsid: restultsId }, next); 
+                db.poweranalysisdays.findOneAndDelete({ resultsid: restultsId, _id: 0 }, next);
             }
         });
 
-    }; 
-
+    };
+    
     function seedDatabase() {
         database.getDb(function (err, db) {
             if (err) {
