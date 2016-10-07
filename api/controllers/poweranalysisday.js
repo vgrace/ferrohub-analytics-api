@@ -13,16 +13,16 @@ module.exports = { get_poweranalysisday_result, make_poweranalysisday_analysis, 
 function get_poweranalysisday_result(req, res, next) {
     var id = 0;
     var isTest = false;
-    if (req.swagger) {
-        console.log("SWAGGER"); 
+    //if (req.swagger) {
+    //    console.log("SWAGGER"); 
         id = req.swagger.params.resultsid.value; //req.swagger contains the path parameters
-        isTest = req.swagger.params.test.value;
-    }
-    else {
-        console.log("NOT SWAGGER");
-        id = req.params.resultsid;
-        isTest = typeof req.query.test === 'undefined' ? false : req.query.test !== "false";
-    }
+        isTest = req.swagger.params.test.value === "" ? true : req.swagger.params.test.value;
+    //}
+    //else {
+    //    console.log("NOT SWAGGER");
+    //    id = req.params.resultsid;
+    //    isTest = typeof req.query.test === 'undefined' ? false : req.query.test !== "false";
+    //}
     
     if (isTest) {
         data.getPowerAnalysisResults(id, function (err, analysisResults) {
@@ -67,6 +67,8 @@ function get_poweranalysisday_result(req, res, next) {
                     res.set("Content-Type", "application/json");
                     //Object found with results -> 200 TEST: resultsid: a8ee17b35c0019efbb53cdcea88bbca288d59687
                     if (resultsData.data.length > 0) {
+                        var del = delete resultsData._id;
+                        console.log(del); 
                         res.send(resultsData);
                     }
                     else {

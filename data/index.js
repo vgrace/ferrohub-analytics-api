@@ -48,7 +48,7 @@
                 next(err);
             }
             else {
-                db.poweranalysisdays.findOneAndDelete({ resultsid: restultsId, _id: 0 }, next);
+                db.poweranalysisdays.findOneAndDelete({ resultsid: restultsId }, next);
             }
         });
 
