@@ -39,14 +39,27 @@ function get_poweranalysisday_result(req, res, next) {
             else {
                 console.log('------------------------------ FROM MF DB');
 
-                if (analysisResults == null) {
-                    //Object not found -> 400
-                    var err_msg = {
-                        "code": 0,
-                        "message": "No object found with resultsid: " + id,
-                        "fields": "resultsid"
+               if (analysisResults == null) {
+               var any_response_post = {
+                        "energyhubid": "8674654",
+                        "starttime": "2016-10-07T07:49:32.762Z",
+                        "endtime": "2016-10-07T07:49:32.762Z",
+                        "userid": "6545",
+                        "resultsid": id,
+                        "analysismodel": "POWERANALYSISDAY",
+                        "processingstatus": "COMPLETED",
+                        "resultslink": "/poweranalysisday/" + id,
+                        "data": seedData.ResultsDataArr
                     };
-                    res.status(400).send(err_msg);
+                    res.status(200).send(any_response_post);
+
+                  //   //Object not found -> 400
+                   // var err_msg = {
+                     //   "code": 0,
+                       // "message": "No object found with resultsid: " + id,
+                       // "fields": "resultsid"
+                   // };
+                   // res.status(400).send(err_msg);
                 }
                 else {
                     res.set("Content-Type", "application/json");
@@ -137,57 +150,51 @@ function make_poweranalysisday_analysis(req, res, next) {
             return;
         }
         else {
-            // Start energyhubid with 1 to get completed results, anything > 1 results in a PENDING response
-            if (energyhubid[0] > 1) {
-                // CREATED - A receipt for an analysis result, contains unique id and link to where the result will be available. -> 201
-                console.log('PENDING');
-                var resultsid = crypto.randomBytes(20).toString('hex');
-                var response_post = {
-                    "energyhubid": energyhubid,
-                    "starttime": starttime,
-                    "endtime": endtime,
-                    "userid": userid,
-                    "resultsid": resultsid,
-                    "analysismodel": "POWERANALYSISDAY",
-                    "processingstatus": "PENDING",
-                    "resultslink": "/poweranalysisday/" + resultsid
-                };
+            // CREATED - A receipt for an analysis result, contains unique id and link to where the result will be available. -> 201
+            var resultsid = crypto.randomBytes(20).toString('hex');
 
-                data.addPowerAnalysisJob(response_post, function (err) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    else {
-                        res.set("Content-Type", "application/json");
-                        res.status(201).send(response_post);
-                    }
-                });
-            }
-            else {
-                // OK - Analysis result available. -> 200
-                console.log('COMPLETED');
-                var resultsid = crypto.randomBytes(20).toString('hex');
-                var analysis_results = {
-                    "energyhubid": energyhubid,
-                    "starttime": starttime,
-                    "endtime": endtime,
-                    "userid": userid,
-                    "resultsid": resultsid,
-                    "data": seedData.ResultsDataArr
-                };
+            var response_post = {
+                "energyhubid": energyhubid,
+                "starttime": starttime,
+                "endtime": endtime,
+                "userid": userid,
+                "resultsid": resultsid,
+                "analysismodel": "POWERANALYSISDAY",
+                "processingstatus": "PENDING",
+                "resultslink": "/poweranalysisday/" + resultsid
+            };
 
-                //ADD TO DB
-                data.addPowerAnalysisResults(analysis_results, function (err) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    else {
-                        console.log("Analysis results succesfully added!");
-                        res.status(200).send(analysis_results);
-                    }
-                });
+            // OK - Analysis result available. -> 200
+            
+            var analysis_results = {
+                "energyhubid": energyhubid,
+                "starttime": starttime,
+                "endtime": endtime,
+                "userid": userid,
+                "resultsid": resultsid,
+                "data": seedData.ResultsDataArr
+            };
 
-            }
+           data.addPowerAnalysisJob(response_post, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    res.set("Content-Type", "application/json");
+                    //res.status(201).send(response_post);
+                }
+            });
+
+            //ADD TO DB
+            data.addPowerAnalysisResults(analysis_results, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    console.log("Analysis results succesfully added!");
+                    res.status(200).send(analysis_results);
+                }
+            });
         }
     }
     else {

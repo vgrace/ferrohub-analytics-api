@@ -5,7 +5,7 @@
   "description": "H2020 Ferroamp Analytics Server REST API.",
   "version": "0.1.1 / 2016-10-04"
  },
- "host": "localhost:10010",
+ "host": "localhost:8080",
  "schemes": [
   "http"
  ],
