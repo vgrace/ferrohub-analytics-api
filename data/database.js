@@ -16,7 +16,9 @@
                     theDb = {
                         db: db,
                         poweranalysisdays: db.collection("test_poweranalysisdays"),
-                        poweranalysisdayjobs: db.collection("test_poweranalysisdayjobs")
+                        poweranalysisdayjobs: db.collection("test_poweranalysisdayjobs"),
+                        poweranalysistrends: db.collection("test_poweranalysistrends"),
+                        poweranalysistrendjobs: db.collection("test_poweranalysistrendjobs")
                     };
                     next(null, theDb); 
                 }

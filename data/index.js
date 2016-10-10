@@ -4,6 +4,57 @@
     var database = require("./database");
 
     //Post poweranalysisjob
+    data.addPowerAnalysisTrendJob = function (jobToInsert, next) {
+        database.getDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.poweranalysistrendjobs.insert(jobToInsert, function (err) {
+                    if (err) {
+                        next(err);
+                    }
+                    else {
+                        next(null);
+                    }
+                });
+            }
+        });
+    }
+
+    //Add poweranalysistrendresults
+    data.addPowerAnalysisTrendResults = function (analysisResultsToInsert, next) {
+        database.getDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.poweranalysistrends.insert(analysisResultsToInsert, function (err) {
+                    if (err) {
+                        next(err);
+                    }
+                    else {
+                        next(null);
+                    }
+                })
+            }
+        });
+    }
+
+    //Get poweranalysistrendresults
+    data.getPowerAnalysisTrendResults = function (restultsId, next) {
+        database.getDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.poweranalysistrends.findOneAndDelete({ resultsid: restultsId }, next);
+            }
+        });
+
+    };
+
+    //Post poweranalysisjob
     data.addPowerAnalysisJob = function (jobToInsert, next) {
         database.getDb(function (err, db) {
             if (err) {

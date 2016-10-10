@@ -48,20 +48,9 @@ function get_poweranalysisday_result(req, res, next) {
                         "endtime": "2016-10-07T07:49:32.762Z",
                         "userid": "6545",
                         "resultsid": id,
-                        "analysismodel": "POWERANALYSISDAY",
-                        "processingstatus": "COMPLETED",
-                        "resultslink": "/poweranalysisday/" + id,
                         "data": seedData.ResultsDataArr
                     };
                     res.status(200).send(any_response_post);
-
-                  //   //Object not found -> 400
-                   // var err_msg = {
-                     //   "code": 0,
-                       // "message": "No object found with resultsid: " + id,
-                       // "fields": "resultsid"
-                   // };
-                   // res.status(400).send(err_msg);
                 }
                 else {
                     res.set("Content-Type", "application/json");
@@ -184,7 +173,7 @@ function make_poweranalysisday_analysis(req, res, next) {
                     console.log(err);
                 }
                 else {
-                    res.set("Content-Type", "application/json");
+                    
                     //res.status(201).send(response_post);
                 }
             });
@@ -196,6 +185,9 @@ function make_poweranalysisday_analysis(req, res, next) {
                 }
                 else {
                     console.log("Analysis results succesfully added!");
+                    var del = delete analysis_results._id;
+                    console.log(del);
+                    res.set("Content-Type", "application/json");
                     res.status(200).send(analysis_results);
                 }
             });

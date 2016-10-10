@@ -1,15 +1,15 @@
 {
  "swagger": "2.0",
  "info": {
-  "title": "Analytics Server REST API",
+  "title": "Analytics Server REST API Testin",
   "description": "H2020 Ferroamp Analytics Server REST API.",
-  "version": "0.1.1 / 2016-10-04"
+  "version": "0.1.2 / 2016-10-10"
  },
  "host": "localhost:8080",
  "schemes": [
   "http"
  ],
- "basePath": "/analytics/v0_1_1",
+ "basePath": "/analytics/v0_1_2",
  "produces": [
   "application/json"
  ],
@@ -20,6 +20,9 @@
     "summary": "The endpoint used to start new 'Power Analysis Day' analysis jobs.",
     "description": "Posting an analysis request to this endpoint puts a new analysis job up for execution and either returns the result directly, or returns a receipt key (resultsid) that should be used to request the result later when available.",
     "operationId": "make_poweranalysisday_analysis",
+    "tags": [
+     "Power Analysis"
+    ],
     "produces": [
      "application/json"
     ],
@@ -31,7 +34,7 @@
       "name": "analysisparams",
       "in": "body",
       "schema": {
-       "$ref": "#/definitions/PowerAnalysisRequest"
+       "$ref": "#/definitions/GenericAnalysisRequest"
       }
      }
     ],
@@ -45,8 +48,14 @@
      "201": {
       "description": "CREATED - A receipt for an analysis result, contains unique id and link to where the result will be available.",
       "schema": {
-       "$ref": "#/definitions/PowerAnalysisResultMetadata"
+       "$ref": "#/definitions/GenericAnalysisResultCreated"
       }
+     },
+     "400": {
+      "$ref": "#/responses/ErrorResponse400"
+     },
+     "500": {
+      "$ref": "#/responses/ErrorResponse500"
      },
      "default": {
       "$ref": "#/responses/DefaultErrorResponse"
@@ -60,6 +69,9 @@
     "summary": "The endpoint used to check the status and get the results of a specific analysis job.",
     "description": "This endpoint is used for Power Analysis Day.",
     "operationId": "get_poweranalysisday_result",
+    "tags": [
+     "Power Analysis"
+    ],
     "produces": [
      "application/json"
     ],
@@ -101,46 +113,113 @@
      }
     }
    }
-  }
- },
- "definitions": {
-  "PowerAnalysisRequest": {
-   "type": "object",
-   "properties": {
-    "energyhubid": {
-     "type": "string",
-     "description": "Unique id of energy hub unit."
-    },
-    "starttime": {
-     "type": "string",
-     "format": "date-time",
-     "description": "Start date for analysis. E.g. '2016-05-17T15:28:34Z' (RFC 3339, ISO 8601)"
-    },
-    "endtime": {
-     "type": "string",
-     "format": "date-time",
-     "description": "End date for analysis. E.g. '2016-06-17T15:28:34Z' (RFC 3339, ISO 8601)"
-    },
-    "userid": {
-     "type": "string",
-     "description": "The user that requests the job."
+  },
+  "/dailytrend": {
+   "x-swagger-router-controller": "poweranalysistrend",
+   "post": {
+    "summary": "The endpoint used to start new 'Power Analysis Daily Trend' analysis jobs.",
+    "description": "Posting an analysis request to this endpoint puts a new analysis job up for execution and either returns the result directly, or returns a receipt key (resultsid) that should be used to request the result later when available.",
+    "operationId": "make_dailytrend_analysis",
+    "tags": [
+     "Daily Trend"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "$ref": "#/parameters/testQParam"
+     },
+     {
+      "name": "analysisparams",
+      "in": "body",
+      "schema": {
+       "$ref": "#/definitions/GenericAnalysisRequest"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK - Analysis result available.",
+      "schema": {
+       "$ref": "#/definitions/DailyTrendResultData"
+      }
+     },
+     "201": {
+      "description": "CREATED - A receipt for an analysis result, contains unique id and link to where the result will be available.",
+      "schema": {
+       "$ref": "#/definitions/GenericAnalysisResultCreated"
+      }
+     },
+     "400": {
+      "$ref": "#/responses/ErrorResponse400"
+     },
+     "500": {
+      "$ref": "#/responses/ErrorResponse500"
+     },
+     "default": {
+      "$ref": "#/responses/DefaultErrorResponse"
+     }
     }
    }
   },
-  "PowerAnalysisResultMetadata": {
-   "allOf": [
-    {
-     "$ref": "#/definitions/PowerAnalysisRequest"
-    },
-    {
-     "$ref": "#/definitions/AnalysisResultsMetaData"
+  "/dailytrend/{resultsid}": {
+   "x-swagger-router-controller": "poweranalysistrend",
+   "get": {
+    "summary": "The endpoint used to check the status and get the results of a specific analysis job.",
+    "description": "This endpoint is used for Power Analysis Daily Trend.",
+    "operationId": "get_dailytrend_result",
+    "tags": [
+     "Daily Trend"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "$ref": "#/parameters/testQParam"
+     },
+     {
+      "$ref": "#/parameters/resultsidQParam"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK - Analysis result available.",
+      "schema": {
+       "$ref": "#/definitions/DailyTrendResultData"
+      }
+     },
+     "400": {
+      "$ref": "#/responses/ErrorResponse400"
+     },
+     "404": {
+      "description": "Not found - Analysis result does not exist due to an unknown resultsid or that the analysis process is not yet completed.",
+      "schema": {
+       "$ref": "#/definitions/AnalysisResultsMetaData"
+      }
+     },
+     "410": {
+      "description": "Gone - Analysis result has expired and is no longer available.",
+      "schema": {
+       "$ref": "#/definitions/AnalysisResultsMetaData"
+      }
+     },
+     "500": {
+      "$ref": "#/responses/ErrorResponse500"
+     },
+     "default": {
+      "$ref": "#/responses/DefaultErrorResponse"
+     }
     }
-   ]
-  },
+   }
+  }
+ },
+ "definitions": {
   "PowerAnalysisDayResultData": {
    "allOf": [
     {
-     "$ref": "#/definitions/PowerAnalysisRequest"
+     "$ref": "#/definitions/GenericAnalysisRequest"
     },
     {
      "$ref": "#/definitions/PowerAnalysisDayResultDataArray"
@@ -248,6 +327,120 @@
     }
    }
   },
+  "DailyTrendResultData": {
+   "allOf": [
+    {
+     "$ref": "#/definitions/GenericAnalysisRequest"
+    },
+    {
+     "$ref": "#/definitions/DailyTrendResultDataContent"
+    }
+   ]
+  },
+  "DailyTrendResultDataContent": {
+   "type": "object",
+   "properties": {
+    "data": {
+     "$ref": "#/definitions/DailyTrendData"
+    }
+   }
+  },
+  "DailyTrendData": {
+   "type": "object",
+   "required": [
+    "weekdays",
+    "weekends"
+   ],
+   "properties": {
+    "weekdays": {
+     "$ref": "#/definitions/DailyTrendDayTypeData"
+    },
+    "weekends": {
+     "$ref": "#/definitions/DailyTrendDayTypeData"
+    }
+   }
+  },
+  "DailyTrendDayTypeData": {
+   "type": "object",
+   "required": [
+    "avgload",
+    "baseload"
+   ],
+   "properties": {
+    "avgload": {
+     "type": "array",
+     "items": {
+      "$ref": "#/definitions/DailyTrendDayHourlyLoadData"
+     }
+    },
+    "baseload": {
+     "type": "array",
+     "items": {
+      "$ref": "#/definitions/DailyTrendDayHourlyLoadData"
+     }
+    }
+   }
+  },
+  "DailyTrendDayHourlyLoadData": {
+   "type": "object",
+   "required": [
+    "hour",
+    "avg",
+    "stddev"
+   ],
+   "properties": {
+    "hour": {
+     "type": "number",
+     "format": "integer",
+     "description": "hour identification as a number 0-23.",
+     "minimum": 0,
+     "maximum": 23
+    },
+    "avg": {
+     "type": "number",
+     "format": "float",
+     "description": "Average load for the hour"
+    },
+    "stddev": {
+     "type": "number",
+     "format": "float",
+     "description": "Standard deviation for the load during the hour"
+    }
+   }
+  },
+  "GenericAnalysisRequest": {
+   "type": "object",
+   "properties": {
+    "energyhubid": {
+     "type": "string",
+     "description": "Unique id of energy hub unit."
+    },
+    "starttime": {
+     "type": "string",
+     "format": "date-time",
+     "description": "Start date for analysis. E.g. '2016-05-17T15:28:34Z' (RFC 3339, ISO 8601)"
+    },
+    "endtime": {
+     "type": "string",
+     "format": "date-time",
+     "description": "End date for analysis. E.g. '2016-06-17T15:28:34Z' (RFC 3339, ISO 8601)"
+    },
+    "userid": {
+     "type": "string",
+     "description": "The user that requests the job."
+    }
+   }
+  },
+  "GenericAnalysisResultCreated": {
+   "allOf": [
+    {
+     "$ref": "#/definitions/GenericAnalysisRequest"
+    },
+    {
+     "$ref": "#/definitions/AnalysisResultsMetaData"
+    }
+   ]
+  },
   "AnalysisResultsMetaData": {
    "type": "object",
    "required": [
@@ -264,8 +457,8 @@
      "description": "ID for the analysis model.",
      "enum": [
       "POWERANALYSISDAY",
-      "POWERANALYSISHOUR",
-      "DAYPROFILE"
+      "POWERANALYSISHOURLY",
+      "DAILYTREND"
      ]
     },
     "processingstatus": {
