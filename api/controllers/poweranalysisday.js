@@ -286,7 +286,8 @@ function make_poweranalysisday_analysis(req, res, next) {
                     console.log("Data found");
                     var del = delete results.value._id;
                     var del_resultsid = delete results.value.resultsid;
-                    
+                    var del_jobstatus = delete results.value.jobstatus;
+                    var del_model = delete results.value.analysismodel; 
                     res.send(results.value);
                 }
             }
