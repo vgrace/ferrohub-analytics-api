@@ -1,4 +1,5 @@
 'use strict';
+var http = require("http");
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -7,7 +8,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var validator = require('express-validator');
 var SwaggerExpress = require('swagger-express-mw');
-
+var routes = require('./routes/index');
 var app = express();
 
 // view engine setup
@@ -23,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(validator());
 app.use(express.static(path.join(__dirname, 'public')));
-
+//app.use('/', routes);
 
 //SWAGGER DOC
 var swaggerJSDoc = require('swagger-jsdoc');

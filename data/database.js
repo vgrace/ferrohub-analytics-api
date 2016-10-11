@@ -2,9 +2,16 @@
 (function (database) {
     var mysql = require("mysql");
     var mongodb = require("mongodb");
-    var mongoUrl = "mongodb://ferrohub:ferrohub2016@ds029705.mlab.com:29705/ferrohub";
+    var mongoUrl = "mongodb://ferrohub:ferrohub2016@ds029705.mlab.com:29705/ferrohub";//Test db
+    //var mongoUrl = "mongodb://CNET:!CnET_mongo_1_!@172.31.26.143:27017/ehubdata?authMechanism=DEFAULT&authSource=ehubdata"; //Real db
+    
     var theDb = null;
-    var mysqlConnection = null; 
+    var mysqlConnection = null;
+
+    //Local Database
+    var mongoLocalUrl = "mongodb://localhost:27017/analytics";//Vad heter databasen?? 
+    var theLocalDb = null;
+
     database.getDb = function (next) {
         if (!theDb) {
             //connect to db
@@ -26,6 +33,28 @@
         }
         else {
             next(null, theDb); 
+        }
+    }
+
+    database.getLocalDb = function (next) {
+        if (!theLocalDb) {
+            //connect to db
+            mongodb.MongoClient.connect(mongoLocalUrl, function (err, db) {
+                if (err) {
+                    next(err, null);
+                }
+                else {
+                    theLocalDb = {
+                        db: db,
+                        poweranalysisday_jobs: db.collection("poweranalysisday_jobs"),
+                        poweranalysisday_results: db.collection("poweranalysisday_results")
+                    };
+                    next(null, theLocalDb);
+                }
+            });
+        }
+        else {
+            next(null, theLocalDb);
         }
     }
 

@@ -3,6 +3,39 @@
     var seedData = require("./seedData");
     var database = require("./database");
 
+    /*LOCAL DATABASE*/
+
+    data.add_poweranalysisday_jobs = function (job, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.poweranalysisday_jobs.insert(job, function (err) {
+                    if (err) {
+                        next(err);
+                    }
+                    else {
+                        next(null);
+                    }
+                });
+            }
+        });
+    }
+
+    data.get_poweranalysisday_results = function (resultsid, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.poweranalysisday_results.findOneAndDelete({ resultsid: resultsid }, next);
+            }
+        });
+    }
+
+    /*DATABASE*/
+
     //Post poweranalysisjob
     data.addPowerAnalysisTrendJob = function (jobToInsert, next) {
         database.getDb(function (err, db) {
