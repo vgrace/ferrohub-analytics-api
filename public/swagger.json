@@ -1,7 +1,7 @@
 {
  "swagger": "2.0",
  "info": {
-  "title": "Analytics Server REST API Testin",
+  "title": "Analytics Server REST API",
   "description": "H2020 Ferroamp Analytics Server REST API.",
   "version": "0.1.2 / 2016-10-10"
  },
@@ -241,87 +241,138 @@
    "type": "object",
    "properties": {
     "ts": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "integer",
      "description": "Unix time."
     },
     "abp": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "Total active base power"
     },
     "abpL1": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "L1 active base power"
     },
     "abpL2": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "L2 active base power"
     },
     "abpL3": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "L3 active base power"
     },
     "rbp": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "Total reactive base power"
     },
     "rbpL1": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "L1 reactive base power"
     },
     "rbpL2": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "L2 reactive base power"
     },
     "rbpL3": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "L3 reactive base power"
     },
     "aip": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "Total active intermittent power"
     },
     "aipL1": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "L1 active intermittent power"
     },
     "aipL2": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "L2 active intermittent power"
     },
     "aipL3": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "L3 active intermittent power"
     },
     "rip": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "Total reactive intermittent power"
     },
     "ripL1": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "L1 reactive intermittent power"
     },
     "ripL2": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "L2 reactive intermittent power"
     },
     "ripL3": {
-     "type": "number",
+     "type": [
+      "number",
+      "null"
+     ],
      "format": "float",
      "description": "L3 reactive intermittent power"
     }

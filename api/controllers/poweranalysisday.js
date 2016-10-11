@@ -41,7 +41,8 @@ function get_poweranalysisday_result(req, res, next) {
             else {
                 console.log('------------------------------ FROM MF DB');
                 if (resultsData == null) {
-               var any_response_post = {
+
+                    var any_response = {
                         "energyhubid": "8674654",
                         "starttime": "2016-10-07T07:49:32.762Z",
                         "endtime": "2016-10-07T07:49:32.762Z",
@@ -49,7 +50,35 @@ function get_poweranalysisday_result(req, res, next) {
                         "resultsid": id,
                         "data": seedData.ResultsDataArr
                     };
-                    res.status(200).send(any_response_post);
+
+                    //var any_response = {
+                    //    "energyhubid": "string",
+                    //    "starttime": "2016-10-11T09:09:11.567Z",
+                    //    "endtime": "2016-10-11T09:09:11.567Z",
+                    //    "userid": "string",
+                    //    "data": [
+                    //      {
+                    //          "ts": null,
+                    //          "abp": null,
+                    //          "abpL1": 0,
+                    //          "abpL2": 0,
+                    //          "abpL3": 0,
+                    //          "rbp": 0,
+                    //          "rbpL1": 0,
+                    //          "rbpL2": 0,
+                    //          "rbpL3": 0,
+                    //          "aip": 0,
+                    //          "aipL1": 0,
+                    //          "aipL2": 0,
+                    //          "aipL3": 0,
+                    //          "rip": 0,
+                    //          "ripL1": 0,
+                    //          "ripL2": 0,
+                    //          "ripL3": 0
+                    //      }
+                    //    ]
+                    //};
+                    res.status(200).send(any_response);
                 }
                 else {
                     res.set("Content-Type", "application/json");
