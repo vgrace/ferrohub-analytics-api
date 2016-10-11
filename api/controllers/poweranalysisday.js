@@ -40,7 +40,6 @@ function get_poweranalysisday_result(req, res, next) {
             }
             else {
                 console.log('------------------------------ FROM MF DB');
-                
                 if (resultsData == null) {
                var any_response_post = {
                         "energyhubid": "8674654",
@@ -206,12 +205,12 @@ function make_poweranalysisday_analysis(req, res, next) {
             "endtime": new Date(endtime).toISOString(), //endtime,
             "userid": userid,
             "resultsid": resultsid,
-            //"analysismodel": "POWERANALYSISDAY",
-            //"jobstatus": 0,
-
             "analysismodel": "POWERANALYSISDAY",
-            "processingstatus": "PENDING",
-            "resultslink": "string",
+            "jobstatus": 0,
+
+            //"analysismodel": "POWERANALYSISDAY",
+            //"processingstatus": "PENDING",
+            //"resultslink": "string",
         };
         // Save job to local db
         //data.addPowerAnalysisJob(job, function (err) {
