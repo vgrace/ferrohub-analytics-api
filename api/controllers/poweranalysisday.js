@@ -197,11 +197,12 @@ function make_poweranalysisday_analysis(req, res, next) {
         }
     }
     else {
-        console.log(new Date("2016-10-07T07:49:32.762Z").toISOString());
+        //console.log(new Date("2016-10-07T07:49:32.762Z").toISOString());
         // Create job
+        
         var job = {
             "energyhubid": energyhubid,
-            "starttime": new Date(startime),//starttime,
+            "starttime": new Date(starttime),//starttime,
             "endtime": new Date(endtime), //endtime,
             "userid": userid,
             "resultsid": resultsid,
