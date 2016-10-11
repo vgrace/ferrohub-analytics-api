@@ -181,7 +181,7 @@ definitions:
     properties:
       ts:
         type: [number, 'null']
-        format: integer
+        format: float
         description: Unix time.
       abp:
         type: [number, 'null']

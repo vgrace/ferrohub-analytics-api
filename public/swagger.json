@@ -245,7 +245,7 @@
       "number",
       "null"
      ],
-     "format": "integer",
+     "format": "float",
      "description": "Unix time."
     },
     "abp": {
