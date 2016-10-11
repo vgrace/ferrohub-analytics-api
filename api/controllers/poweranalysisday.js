@@ -163,7 +163,7 @@ function make_poweranalysisday_analysis(req, res, next) {
             
             var analysis_results = {
                 "energyhubid": energyhubid,
-                "starttime": starttime,
+                "starttime": ISODate(starttime),
                 "endtime": endtime,
                 "userid": userid,
                 "resultsid": resultsid,
@@ -201,8 +201,8 @@ function make_poweranalysisday_analysis(req, res, next) {
         // Create job
         var job = {
             "energyhubid": energyhubid,
-            "starttime": new Date(starttime).toISOString(),//starttime,
-            "endtime": new Date(endtime).toISOString(), //endtime,
+            "starttime": ISODate(startime),//starttime,
+            "endtime": ISODate(endtime), //endtime,
             "userid": userid,
             "resultsid": resultsid,
             "analysismodel": "POWERANALYSISDAY",
