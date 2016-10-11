@@ -40,7 +40,7 @@ function get_poweranalysisday_result(req, res, next) {
             }
             else {
                 console.log('------------------------------ FROM MF DB');
-
+                
                 if (resultsData == null) {
                var any_response_post = {
                         "energyhubid": "8674654",
@@ -170,7 +170,7 @@ function make_poweranalysisday_analysis(req, res, next) {
                 "resultsid": resultsid,
                 "data": seedData.ResultsDataArr
             };
-
+            
            data.addPowerAnalysisJob(response_post, function (err) {
                 if (err) {
                     console.log(err);
@@ -190,7 +190,7 @@ function make_poweranalysisday_analysis(req, res, next) {
                     console.log("Analysis results succesfully added!");
                     var del = delete analysis_results._id;
                     var del_resultsid = delete analysis_results.resultsid;
-                    console.log(del);
+                    
                     res.set("Content-Type", "application/json");
                     res.status(200).send(analysis_results);
                 }
@@ -198,11 +198,12 @@ function make_poweranalysisday_analysis(req, res, next) {
         }
     }
     else {
+        console.log(new Date("2016-10-07T07:49:32.762Z").toISOString());
         // Create job
         var job = {
             "energyhubid": energyhubid,
-            "starttime": starttime,
-            "endtime": endtime,
+            "starttime": new Date(starttime).toISOString(),//starttime,
+            "endtime": new Date(endtime).toISOString(), //endtime,
             "userid": userid,
             "resultsid": resultsid,
             //"analysismodel": "POWERANALYSISDAY",
@@ -254,8 +255,9 @@ function make_poweranalysisday_analysis(req, res, next) {
                 else {
                     //Found data
                     console.log("Data found");
-                    var del = delete results._id;
-                    var del_resultsid = delete results.resultsid;
+                    var del = delete results.value._id;
+                    var del_resultsid = delete results.value.resultsid;
+                    
                     res.send(results.value);
                 }
             }
