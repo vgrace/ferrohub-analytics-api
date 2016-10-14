@@ -3,8 +3,8 @@ swagger: '2.0'
 info:
   title: Analytics Server REST API
   description: H2020 Ferroamp Analytics Server REST API.
-# date: "2016-09-26"
-  version: "0.1.2 / 2016-10-10"
+
+  version: "0.1.3 / 2016-10-14"
 
 # the domain of the service
 host: localhost:8080 #172.31.30.181
@@ -12,18 +12,18 @@ host: localhost:8080 #172.31.30.181
 schemes:
   - http
 # will be prefixed to all paths
-basePath: /analytics/v0_1_2
+basePath: /analytics/v0_1_3
 produces:
   - application/json
 paths:
-  /poweranalysisday:
+  /dailypower:
     # our controller name
-    x-swagger-router-controller: poweranalysisday
+    x-swagger-router-controller: poweranalysisdaily
     post:
-      summary: The endpoint used to start new 'Power Analysis Day' analysis jobs.
-      description: Posting an analysis request to this endpoint puts a new analysis job up for execution and either returns the result directly, or returns a receipt key (resultsid) that should be used to request the result later when available. 
-      operationId: make_poweranalysisday_analysis
-      tags: [Power Analysis]
+      summary: The endpoint is used to get daily average power data for a facility. 
+      description: Data returned include intermittent and base loads per phase and total for both active and reactive power. Posting an analysis request to this endpoint puts a new analysis job up for execution and either returns the result directly, or returns a receipt key (resultsid) that should be used to request the result later when available. 
+      operationId: make_poweranalysisdaily
+      tags: [Daily Power, Power Analysis]
       produces:
         - application/json
       parameters:
@@ -36,7 +36,7 @@ paths:
         200:
           description: OK - Analysis result available.
           schema:
-            $ref: '#/definitions/PowerAnalysisDayResultData'        
+            $ref: '#/definitions/DailyPowerData'        
         201: 
           description: CREATED - A receipt for an analysis result, contains unique id and link to where the result will be available.
           schema:
@@ -49,14 +49,14 @@ paths:
             $ref: '#/responses/DefaultErrorResponse'
    
         
-  /poweranalysisday/{resultsid}:
+  /dailypower/{resultsid}:
     # our controller name
-    x-swagger-router-controller: poweranalysisday
+    x-swagger-router-controller: poweranalysisdaily
     get:
       summary: The endpoint used to check the status and get the results of a specific analysis job.
-      description:  This endpoint is used for Power Analysis Day.
-      operationId: get_poweranalysisday_result
-      tags: [Power Analysis]
+      description:  This endpoint is used for power analysis per day.
+      operationId: get_poweranalysisdaily_result
+      tags: [Daily Power, Power Analysis]
       produces:
         - application/json
       parameters:
@@ -66,7 +66,7 @@ paths:
         200:
           description: OK - Analysis result available.
           schema:
-            $ref: '#/definitions/PowerAnalysisDayResultData'
+            $ref: '#/definitions/DailyPowerData'
         400:
           $ref: '#/responses/ErrorResponse400'
         404:
@@ -83,14 +83,14 @@ paths:
           $ref: '#/responses/DefaultErrorResponse'
  
 
-  /dailytrend:
+  /hourlypower:
     # our controller name
-    x-swagger-router-controller: poweranalysistrend
+    x-swagger-router-controller: poweranalysishourly
     post:
-      summary: The endpoint used to start new 'Power Analysis Daily Trend' analysis jobs.
-      description: Posting an analysis request to this endpoint puts a new analysis job up for execution and either returns the result directly, or returns a receipt key (resultsid) that should be used to request the result later when available. 
-      operationId: make_dailytrend_analysis
-      tags: [Daily Trend]
+      summary: The endpoint used to get hourly average power data for a facility.
+      description: Data returned include intermittent loads per phase and total for active power. Posting a request to this endpoint puts a new analysis job up for execution and either returns the result directly, or returns a receipt key (resultsid) that should be used to request the result later when available. 
+      operationId: make_poweranalysishourly
+      tags: [Hourly Power, Power Analysis]
       produces:
         - application/json
       parameters:
@@ -103,7 +103,7 @@ paths:
         200:
           description: OK - Analysis result available.
           schema:
-            $ref: '#/definitions/DailyTrendResultData'        
+            $ref: '#/definitions/HourlyPowerData'        
         201: 
           description: CREATED - A receipt for an analysis result, contains unique id and link to where the result will be available.
           schema:
@@ -117,14 +117,14 @@ paths:
    
  
          
-  /dailytrend/{resultsid}:
+  /hourlypower/{resultsid}:
     # our controller name
-    x-swagger-router-controller: poweranalysistrend
+    x-swagger-router-controller: poweranalysishourly
     get:
       summary: The endpoint used to check the status and get the results of a specific analysis job.
       description:  This endpoint is used for Power Analysis Daily Trend.
-      operationId: get_dailytrend_result
-      tags: [Daily Trend]
+      operationId: get_poweranalysishourly_result
+      tags: [Hourly Power, Power Analysis]
       produces:
         - application/json
       parameters:
@@ -134,7 +134,7 @@ paths:
         200:
           description: OK - Analysis result available.
           schema:
-            $ref: '#/definitions/DailyTrendResultData'
+            $ref: '#/definitions/HourlyPowerData'
         400:
           $ref: '#/responses/ErrorResponse400'
         404:
@@ -156,31 +156,31 @@ paths:
 definitions:
 
 
-# ************************************* Power Analysis
+# ************************************* Daily Power 
 
-  PowerAnalysisDayResultData:
+  DailyPowerData:
     allOf:
       - $ref: '#/definitions/GenericAnalysisRequest'
-      - $ref: '#/definitions/PowerAnalysisDayResultDataArray'
+      - $ref: '#/definitions/DailyPowerDataContent'
 
 
-# Modellerar som en array av datapoint objects. 
-# En alternativ modell med en rak array av arrays ger mer kompakt struktur, men
-# inga explicita namn på properties i data.
-  PowerAnalysisDayResultDataArray:
+
+  DailyPowerDataContent:
     type: object
     properties:
       data:
         type: array
         items:
-          $ref: "#/definitions/PowerAnalysisDayDatapoint"
+          $ref: "#/definitions/DailyPowerDatapoint"
 
 
-  PowerAnalysisDayDatapoint:
+  DailyPowerDatapoint:
     type: object
+    required:
+      - ts
     properties:
       ts:
-        type: [number, 'null']
+        type: number
         format: float
         description: Unix time.
       abp:
@@ -248,68 +248,52 @@ definitions:
         format: float
         description: L3 reactive intermittent power
 
-# ***************************** Daily Trend
+# ***************************** Hourly Power
 
 
-  DailyTrendResultData:
+  HourlyPowerData:
     allOf:
       - $ref: '#/definitions/GenericAnalysisRequest'
-      - $ref: '#/definitions/DailyTrendResultDataContent'
+      - $ref: '#/definitions/HourlyPowerDataContent'
 
-  DailyTrendResultDataContent:
+  HourlyPowerDataContent:
     type: object
     properties:
       data:
-        $ref: "#/definitions/DailyTrendData"
+        type: array
+        items:
+          $ref: "#/definitions/HourlyPowerDatapoint"
           
-  DailyTrendData:
-    type: object
-    required:
-      - weekdays
-      - weekends
-    properties:
-      weekdays:
-        $ref: "#/definitions/DailyTrendDayTypeData"
-      weekends:
-        $ref: "#/definitions/DailyTrendDayTypeData"
 
-  DailyTrendDayTypeData:
+  HourlyPowerDatapoint:
     type: object
     required:
-      - avgload
-      - baseload
+      - ts
     properties:
-      avgload:
-        type: array
-        items:
-          $ref: "#/definitions/DailyTrendDayHourlyLoadData"
-      baseload:
-        type: array
-        items:
-          $ref: "#/definitions/DailyTrendDayHourlyLoadData"
-
-  DailyTrendDayHourlyLoadData:
-    type: object
-    required:
-      - hour
-      - avg
-      - stddev
-    properties:
-      hour:
-        type: number
-        format: integer
-        description: hour identification as a number 0-23.
-        minimum: 0
-        maximum: 23
-      avg:
+      ts:
         type: number
         format: float
-        description: Average load for the hour
-      stddev:
-        type: number
+        description: Unix time.
+      aip:
+        type: [number, 'null']
         format: float
-        description: Standard deviation for the load during the hour
-
+        description: Total active intermittent power
+      aipL1:
+        type: [number, 'null']
+        format: float
+        description: L1 active intermittent power
+      aipL2:
+        type: [number, 'null']
+        format: float
+        description: L2 active intermittent power
+      aipL3:
+        type: [number, 'null']
+        format: float
+        description: L3 active intermittent power
+        
+        
+        
+        
 # Common objects
 
 
@@ -352,9 +336,8 @@ definitions:
         type: string
         description: ID for the analysis model.
         enum:
-          - POWERANALYSISDAY
-          - POWERANALYSISHOURLY
-          - DAILYTREND
+          - DAILYPOWER
+          - HOURLYPOWER
       processingstatus:
         type: string
         description: processing status for the result.

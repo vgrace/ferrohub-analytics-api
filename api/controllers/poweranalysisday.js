@@ -50,34 +50,6 @@ function get_poweranalysisday_result(req, res, next) {
                         "resultsid": id,
                         "data": seedData.ResultsDataArr
                     };
-
-                    //var any_response = {
-                    //    "energyhubid": "string",
-                    //    "starttime": "2016-10-11T09:09:11.567Z",
-                    //    "endtime": "2016-10-11T09:09:11.567Z",
-                    //    "userid": "string",
-                    //    "data": [
-                    //      {
-                    //          "ts": null,
-                    //          "abp": null,
-                    //          "abpL1": 0,
-                    //          "abpL2": 0,
-                    //          "abpL3": 0,
-                    //          "rbp": 0,
-                    //          "rbpL1": 0,
-                    //          "rbpL2": 0,
-                    //          "rbpL3": 0,
-                    //          "aip": 0,
-                    //          "aipL1": 0,
-                    //          "aipL2": 0,
-                    //          "aipL3": 0,
-                    //          "rip": 0,
-                    //          "ripL1": 0,
-                    //          "ripL2": 0,
-                    //          "ripL3": 0
-                    //      }
-                    //    ]
-                    //};
                     res.status(200).send(any_response);
                 }
                 else {
