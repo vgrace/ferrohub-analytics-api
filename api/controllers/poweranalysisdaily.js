@@ -138,6 +138,22 @@
         }
     }
 
+    function getResults(resultsId, next) {
+        //data.getPowerAnalysisResults(resultsId, function (err, results) {
+        data.get_poweranalysisday_results(resultsId, function (err, results) {
+            if (err) {
+                console.log("Error in getResults");
+                console.log(err);
+                next(err, null);
+            }
+            else {
+                console.log("No error");
+                console.log(results);
+                next(null, results);
+            }
+        });
+    }
+
     // GET /dailypower/{resultsid}: operationId: get_poweranalysisdaily_result
     poweranalysisdaily.get_poweranalysisdaily_result = function (req, res, next) {
         // String querys
