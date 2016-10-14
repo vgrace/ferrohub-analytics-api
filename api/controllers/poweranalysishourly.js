@@ -71,7 +71,7 @@
                 "starttime": new Date(starttime),
                 "endtime": new Date(endtime),
                 "userid": userid,
-                "resultsid": resultsid,
+                //"resultsid": resultsid,
                 "data": seedData.ResultsHourly
             };
             res.status(200).send(analysis_results);
@@ -102,7 +102,7 @@
                 "starttime": "2016-10-07T07:49:32.762Z",
                 "endtime": "2016-10-07T07:49:32.762Z",
                 "userid": "6545",
-                "resultsid": id,
+                //"resultsid": id,
                 "data": seedData.ResultsHourly
             };
             res.status(200).send(any_response);
