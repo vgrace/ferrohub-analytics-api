@@ -47,7 +47,9 @@
                     theLocalDb = {
                         db: db,
                         poweranalysisday_jobs: db.collection("poweranalysisday_jobs"),
-                        poweranalysisday_results: db.collection("poweranalysisday_results")
+                        poweranalysisday_results: db.collection("poweranalysisday_results"),
+                        poweranalysishour_jobs: db.collection("poweranalysishour_jobs"), 
+                        poweranalysishour_results: db.collection("poweranalysishour_results")
                     };
                     next(null, theLocalDb);
                 }
