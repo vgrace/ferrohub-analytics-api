@@ -78,15 +78,80 @@
         }
         // REAL (TEST = false)
         else {
-            //Not implemented yet, try to set Test to true
-            var err_msg = {
-                "code": 0,
-                "message": "No real data yet, try to set Test=true for test data",
-                "fields": "Test"
+            // Create job
+            var job = {
+                "energyhubid": energyhubid,
+                "starttime": new Date(starttime),
+                "endtime": new Date(endtime),
+                "userid": userid,
+                "resultsid": resultsid,
+                "analysismodel": "HOURLYPOWER",
+                "jobstatus": 0,
             };
+            // Save job to local db
+            data.add_poweranalysishour_jobs(job, function (err) {
+                if (err) {
+                    console.log(err);
+                    var err_msg = {
+                        "code": 0,
+                        "message": err,
+                        "fields": ""
+                    };
+                    res.status(500).send(err_msg);
+                }
+                else {
+                    console.log('Saved to local db');
+                }
+            });
 
-            res.status(500).send(err_msg);
+            // Poll until there is results
+            getResults(resultsid, polling);
+
+            function polling(err, results) {
+                if (err) {
+                    console.log(err);
+                    var err_msg = {
+                        "code": 0,
+                        "message": err,
+                        "fields": ""
+                    };
+
+                    res.status(500).send(err_msg);
+                }
+                else {
+                    if (results.value === null) {
+                        //No data yet call again
+                        console.log("No data yet, call again");
+                        getResults(resultsid, polling);
+                    }
+                    else {
+                        //Found data
+                        console.log("Data found");
+                        var del = delete results.value._id;
+                        var del_resultsid = delete results.value.resultsid;
+                        var del_jobstatus = delete results.value.jobstatus;
+                        var del_model = delete results.value.analysismodel;
+                        res.send(results.value);
+                    }
+                }
+            }
         }
+    }
+
+    function getResults(resultsId, next) {
+        //data.getPowerAnalysisResults(resultsId, function (err, results) {
+        data.get_poweranalysishour_results(resultsId, function (err, results) {
+            if (err) {
+                console.log("Error in getResults");
+                console.log(err);
+                next(err, null);
+            }
+            else {
+                console.log("No error");
+                console.log(results);
+                next(null, results);
+            }
+        });
     }
 
     // GET /hourlypower/{resultsid}: operationId: get_poweranalysishourly_result
@@ -109,14 +174,53 @@
         }
         // REAL (TEST = false)
         else {
-            //Not implemented yet, try to set Test to true
-            var err_msg = {
-                "code": 0,
-                "message": "No real data yet, try to set Test=true for test data",
-                "fields": "Test"
-            };
-
-            res.status(500).send(err_msg);
+            // OBS! Change to local db function
+            data.get_poweranalysishour_results(id, function (err, analysisResults) {
+                var resultsData = analysisResults.value;
+                if (err) {
+                    //Server error -> 500
+                    var err_msg = {
+                        "code": 0,
+                        "message": "Internal Server Error: " + err,
+                        "fields": ""
+                    };
+                    res.status(500).send(err_msg);
+                }
+                else {
+                    if (resultsData == null) {
+                        // Results not found -> 404
+                        var not_found = {
+                            "resultsid": id,
+                            "analysismodel": "HOURLYPOWER",
+                            "processingstatus": "PENDING",
+                            "resultslink": "Resultsid:" + id + " not found"
+                        };
+                        res.status(404).send(not_found);
+                    }
+                    else {
+                        res.set("Content-Type", "application/json");
+                        //Object found with results -> 200
+                        if (resultsData.data.length > 0) {
+                            var del = delete resultsData._id;
+                            var del_resultsid = delete resultsData.resultsid;
+                            var del_jobstatus = delete resultsData.jobstatus;
+                            var del_model = delete resultsData.analysismodel;
+                            console.log(del);
+                            res.send(resultsData);
+                        }
+                        else {
+                            //No results yet -> 404
+                            var no_res_err = {
+                                "resultsid": id,
+                                "analysismodel": "DAILYPOWER",
+                                "processingstatus": "PENDING",
+                                "resultslink": "/hourlypower/" + resultsData.resultsid
+                            };
+                            res.status(404).send(no_res_err);
+                        }
+                    }
+                }
+            });
         }
     }
 })(module.exports);

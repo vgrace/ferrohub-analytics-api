@@ -174,8 +174,7 @@
         }
         // REAL (TEST = false)
         else {
-            // OBS! Change to local db function
-            data.getPowerAnalysisResults(id, function (err, analysisResults) {
+            data.get_poweranalysisday_results(id, function (err, analysisResults) {
                 var resultsData = analysisResults.value;
                 if (err) {
                     //Server error -> 500
@@ -203,6 +202,8 @@
                         if (resultsData.data.length > 0) {
                             var del = delete resultsData._id;
                             var del_resultsid = delete resultsData.resultsid;
+                            var del_jobstatus = delete resultsData.jobstatus;
+                            var del_model = delete resultsData.analysismodel;
                             console.log(del);
                             res.send(resultsData);
                         }

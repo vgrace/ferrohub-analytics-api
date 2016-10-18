@@ -5,6 +5,37 @@
 
     /*LOCAL DATABASE*/
 
+    // HOURLY
+    data.add_poweranalysishour_jobs = function (job, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.poweranalysishour_jobs.insert(job, function (err) {
+                    if (err) {
+                        next(err);
+                    }
+                    else {
+                        next(null);
+                    }
+                });
+            }
+        });
+    }
+
+    data.get_poweranalysishour_results = function (resultsid, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.poweranalysishour_results.findOneAndDelete({ resultsid: resultsid }, next);
+            }
+        });
+    }
+
+    //DAILY
     data.add_poweranalysisday_jobs = function (job, next) {
         database.getLocalDb(function (err, db) {
             if (err) {
