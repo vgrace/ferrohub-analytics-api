@@ -267,6 +267,8 @@ definitions:
 
   HourlyPowerDatapoint:
     type: object
+    required:
+      - ts
     properties:
       ts:
         type: number
