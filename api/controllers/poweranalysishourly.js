@@ -1,5 +1,4 @@
-﻿
-(function (poweranalysishourly) {
+﻿(function (poweranalysishourly) {
     var crypto = require('crypto');
     var data = require('../../data');
     var seedData = require('../../data/seedData');
@@ -76,7 +75,7 @@
             };
             res.status(200).send(analysis_results);
         }
-        // REAL (TEST = false)
+            // REAL (TEST = false)
         else {
             // Create job
             var job = {
@@ -172,7 +171,7 @@
             };
             res.status(200).send(any_response);
         }
-        // REAL (TEST = false)
+            // REAL (TEST = false)
         else {
             // OBS! Change to local db function
             data.get_poweranalysishour_results(id, function (err, analysisResults) {

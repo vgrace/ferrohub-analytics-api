@@ -130,7 +130,7 @@
                         next(err);
                     }
                     else {
-                        next(null); 
+                        next(null);
                     }
                 });
             }
@@ -149,7 +149,7 @@
                         next(err);
                     }
                     else {
-                        next(null); 
+                        next(null);
                     }
                 })
             }
@@ -168,7 +168,7 @@
         });
 
     };
-    
+
     function seedDatabase() {
         database.getDb(function (err, db) {
             if (err) {
@@ -221,10 +221,10 @@
         database.getMysql(function (err, tblRows) {
             if (err) {
                 console.log('Failed to connect to mysql');
-                console.log(err); 
+                console.log(err);
             }
             else {
-                console.log('SUCCESS!'); 
+                console.log('SUCCESS!');
                 console.log(tblRows);
             }
         });

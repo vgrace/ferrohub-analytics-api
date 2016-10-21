@@ -1,5 +1,4 @@
-﻿
-(function (poweranalysisdaily) {
+﻿(function (poweranalysisdaily) {
 
     var crypto = require('crypto');
     var data = require('../../data');
@@ -30,7 +29,7 @@
             userid = req.body.userid;
             isTest = typeof req.query.test === 'undefined' ? false : req.query.test !== "false";
         }
-        
+
         //Express validator
         req.assert('energyhubid', 'Invalid parameter: this parameter cannot be empty').notEmpty();
         req.assert('starttime', 'Invalid parameter: this parameter cannot be empty').notEmpty();
@@ -76,7 +75,7 @@
             };
             res.status(200).send(analysis_results);
         }
-        // REAL (TEST = false)
+            // REAL (TEST = false)
         else {
             // Create job
             var job = {
@@ -159,7 +158,7 @@
         // String querys
         var id = req.swagger.params.resultsid.value;
         var isTest = req.swagger.params.test.value === "" ? true : req.swagger.params.test.value;
-        
+
         // TEST
         if (isTest) {
             var any_response = {
@@ -172,7 +171,7 @@
             };
             res.status(200).send(any_response);
         }
-        // REAL (TEST = false)
+            // REAL (TEST = false)
         else {
             data.get_poweranalysisday_results(id, function (err, analysisResults) {
                 var resultsData = analysisResults.value;
@@ -193,7 +192,7 @@
                             "analysismodel": "DAILYPOWER",
                             "processingstatus": "PENDING",
                             "resultslink": "Resultsid:" + id + " not found"
-                        }; 
+                        };
                         res.status(404).send(not_found);
                     }
                     else {

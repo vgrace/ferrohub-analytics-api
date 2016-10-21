@@ -4,7 +4,7 @@
     var mongodb = require("mongodb");
     var mongoUrl = "mongodb://ferrohub:ferrohub2016@ds029705.mlab.com:29705/ferrohub";//Test db
     //var mongoUrl = "mongodb://CNET:!CnET_mongo_1_!@172.31.26.143:27017/ehubdata?authMechanism=DEFAULT&authSource=ehubdata"; //Real db
-    
+
     var theDb = null;
     var mysqlConnection = null;
 
@@ -27,12 +27,12 @@
                         poweranalysistrends: db.collection("test_poweranalysistrends"),
                         poweranalysistrendjobs: db.collection("test_poweranalysistrendjobs")
                     };
-                    next(null, theDb); 
+                    next(null, theDb);
                 }
             });
         }
         else {
-            next(null, theDb); 
+            next(null, theDb);
         }
     }
 
@@ -48,7 +48,7 @@
                         db: db,
                         poweranalysisday_jobs: db.collection("poweranalysisday_jobs"),
                         poweranalysisday_results: db.collection("poweranalysisday_results"),
-                        poweranalysishour_jobs: db.collection("poweranalysishour_jobs"), 
+                        poweranalysishour_jobs: db.collection("poweranalysishour_jobs"),
                         poweranalysishour_results: db.collection("poweranalysishour_results")
                     };
                     next(null, theLocalDb);
@@ -75,6 +75,6 @@
                 next(null, rows);
             }
         });
-        mysqlConnection.end(); 
+        mysqlConnection.end();
     }
 })(module.exports)
