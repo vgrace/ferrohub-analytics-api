@@ -6,6 +6,30 @@
     /*LOCAL DATABASE*/
 
     // HOURLY
+    data.listen = function (filter, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                console.log(filter);
+
+                // set MongoDB cursor options
+                var cursorOptions = {
+                    tailable: true,
+                    awaitdata: true,
+                    numberOfRetries: -1
+                };
+                //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
+                var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).stream();
+                stream.on('data', function (document) {
+                    //console.log(document);
+                    next(null, document);
+                });
+            }
+        });
+    }
+
     data.add_poweranalysishour_jobs = function (job, next) {
         database.getLocalDb(function (err, db) {
             if (err) {

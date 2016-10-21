@@ -3,7 +3,6 @@
     var mysql = require("mysql");
     var mongodb = require("mongodb");
     var mongoUrl = "mongodb://ferrohub:ferrohub2016@ds029705.mlab.com:29705/ferrohub";//Test db
-    //var mongoUrl = "mongodb://CNET:!CnET_mongo_1_!@172.31.26.143:27017/ehubdata?authMechanism=DEFAULT&authSource=ehubdata"; //Real db
 
     var theDb = null;
     var mysqlConnection = null;
