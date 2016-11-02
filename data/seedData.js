@@ -497,10 +497,10 @@
 
     seedData.getKwhData = function (resultsWArray, type) {
         console.log(type + " kWh: " + resultsWArray.length);
-
+        var kwhArray = []; 
         for (var i = 0; i < resultsWArray.length; i++) {
             var wObj = resultsWArray[i];
-            
+            var newwObj;
 
             if (type === "HOUR") {
                 
@@ -510,28 +510,50 @@
                 wObj.aipL3 = wObj.aipL3 / 1000;
             }
             else {
-                wObj.aip = wObj.aip / 1000;
-                wObj.aipL1 = wObj.aipL1 / 1000;
-                wObj.aipL2 = wObj.aipL2 / 1000;
-                wObj.aipL3 = wObj.aipL3 / 1000;
+                newwObj = {
+                    ts: wObj.ts,
+                    aip: wObj.aip / 1000,
+                    aipL1: wObj.aipL1 / 1000,
+                    aipL2: wObj.aipL2 / 1000,
+                    aipL3: wObj.aipL3 / 1000,
+                    abp: wObj.abp / 1000,
+                    abpL1: wObj.abpL1 / 1000,
+                    abpL2: wObj.abpL2 / 1000,
+                    abpL3: wObj.abpL3 / 1000,
+                    rbp: wObj.rbp / 1000,
+                    rbpL1: wObj.rbpL1 / 1000,
+                    rbpL: wObj.rbpL2 / 1000,
+                    rbpL3: wObj.rbpL3 / 1000,
+                    rip: wObj.rip / 1000,
+                    ripL1: wObj.ripL1 / 1000,
+                    ripL2: wObj.ripL2 / 1000,
+                    ripL3: wObj.ripL3 / 1000
+                }
+                /*newwObj.ts = wObj.ts; 
+                newwObj.aip = wObj.aip / 1000;
+                newwObj.aipL1 = wObj.aipL1 / 1000;
+                newwObj.aipL2 = wObj.aipL2 / 1000;
+                newwObj.aipL3 = wObj.aipL3 / 1000;
 
-                wObj.abp = wObj.abp / 1000;
-                wObj.abpL1 = wObj.abpL1 / 1000;
-                wObj.abpL2 = wObj.abpL2 / 1000;
-                wObj.abpL3 = wObj.abpL3 / 1000;
+                newwObj.abp = wObj.abp / 1000;
+                newwObj.abpL1 = wObj.abpL1 / 1000;
+                newwObj.abpL2 = wObj.abpL2 / 1000;
+                newwObj.abpL3 = wObj.abpL3 / 1000;
 
-                wObj.rbp = wObj.rbp / 1000;
-                wObj.rbpL1 = wObj.rbpL1 / 1000;
-                wObj.rbpL2 = wObj.rbpL2 / 1000;
-                wObj.rbpL3 = wObj.rbpL3 / 1000;
+                newwObj.rbp = wObj.rbp / 1000;
+                newwObj.rbpL1 = wObj.rbpL1 / 1000;
+                newwObj.rbpL2 = wObj.rbpL2 / 1000;
+                newwObj.rbpL3 = wObj.rbpL3 / 1000;
 
-                wObj.rip = wObj.rip / 1000;
-                wObj.ripL1 = wObj.ripL1 / 1000;
-                wObj.ripL2 = wObj.ripL2 / 1000;
-                wObj.ripL3 = wObj.ripL3 / 1000;
+                newwObj.rip = wObj.rip / 1000;
+                newwObj.ripL1 = wObj.ripL1 / 1000;
+                newwObj.ripL2 = wObj.ripL2 / 1000;
+                newwObj.ripL3 = wObj.ripL3 / 1000;*/
+
+                kwhArray[i] = newwObj;
             }
         }
-        return resultsWArray; 
+        return kwhArray;
     }
 
     seedData.ResultsHourly = {
