@@ -48,14 +48,16 @@ function get_poweranalysisday_result(req, res, next) {
                         "endtime": "2016-10-07T07:49:32.762Z",
                         "userid": "6545",
                         "resultsid": id,
-                        "data": seedData.ResultsDataArr
+                        "data": [] //seedData.ResultsDataArr
                     };
                     res.status(200).send(any_response);
                 }
                 else {
+                     
                     res.set("Content-Type", "application/json");
                     //Object found with results -> 200 TEST: resultsid: a8ee17b35c0019efbb53cdcea88bbca288d59687
                     if (resultsData.data.length > 0) {
+                        console.log("Resultsdata not null");
                         var del = delete resultsData._id;
                         var del_resultsid = delete resultsData.resultsid;
                         console.log(del); 
@@ -168,7 +170,7 @@ function make_poweranalysisday_analysis(req, res, next) {
                 "endtime": endtime,
                 "userid": userid,
                 "resultsid": resultsid,
-                "data": seedData.ResultsDataArr
+                "data": seedData.getKwhData(seedData.ResultsDataArr, "DAY") //seedData.ResultsDataArr
             };
             
            data.addPowerAnalysisJob(response_post, function (err) {

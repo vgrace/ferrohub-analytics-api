@@ -71,7 +71,7 @@
                 "endtime": new Date(endtime),
                 "userid": userid,
                 //"resultsid": resultsid,
-                "data": seedData.ResultsDataArr
+                "data": seedData.getKwhData(seedData.ResultsDataArr, "DAY") //seedData.ResultsDataArr
             };
             res.status(200).send(analysis_results);
         }
@@ -87,6 +87,7 @@
                 "analysismodel": "DAILYPOWER",
                 "jobstatus": 0,
             };
+
             // Save job to local db
             data.add_poweranalysisday_jobs(job, function (err) {
                 if (err) {
@@ -103,8 +104,60 @@
                 }
             });
 
+            data.daily_listen({ "resultsid": resultsid, "jobstatus": 1 }, function (err, job_results) {
+                console.log("Listening...");
+
+                if (err) {
+                    console.log(err);
+                    var err_msg = {
+                        "code": 0,
+                        "message": err,
+                        "fields": ""
+                    };
+
+                    res.status(500).send(err_msg);
+                }
+                else {
+                    console.log("The log stating there are results to retrieve");
+                    console.log(job_results);
+
+                    var results_found = {
+                        "energyhubid": "Yay!",
+                        "starttime": "2016-10-21T09:18:29.977Z",
+                        "endtime": "2016-10-21T09:18:29.977Z",
+                        "userid": "string",
+                        "resultsid": "string",
+                        "analysismodel": "DAILYPOWER",
+                        "processingstatus": "PENDING",
+                        "resultslink": "string"
+                    };
+
+                    //res.status(201).send(results_found);
+
+                    data.get_poweranalysisday_results(resultsid, function (err, final_results) {
+                        if (err) {
+                            console.log(err);
+                            var err_msg = {
+                                "code": 0,
+                                "message": err,
+                                "fields": ""
+                            };
+                            res.status(500).send(err_msg);
+                        }
+                        else {
+                            console.log("Returning the results yao!");
+                            var del = delete final_results.value._id;
+                            var del_resultsid = delete final_results.value.resultsid;
+                            var del_jobstatus = delete final_results.value.jobstatus;
+                            var del_model = delete final_results.value.analysismodel;
+                            res.send(final_results.value);
+                        }
+                    });
+                }
+            });
+
             // Poll until there is results
-            getResults(resultsid, polling);
+            /*getResults(resultsid, polling);
 
             function polling(err, results) {
                 if (err) {
@@ -133,7 +186,7 @@
                         res.send(results.value);
                     }
                 }
-            }
+            }*/
         }
     }
 
@@ -167,7 +220,7 @@
                 "endtime": "2016-10-07T07:49:32.762Z",
                 "userid": "6545",
                 //"resultsid": id,
-                "data": seedData.ResultsDataArr
+                "data": seedData.getKwhData(seedData.ResultsDataArr, "DAY") //seedData.ResultsDataArr
             };
             res.status(200).send(any_response);
         }

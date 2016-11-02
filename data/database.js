@@ -8,7 +8,7 @@
     var mysqlConnection = null;
 
     //Local Database
-    var mongoLocalUrl = "mongodb://localhost:27017/analytics";//Vad heter databasen?? 
+    var mongoLocalUrl = "mongodb://localhost:27017/analytics";
     var theLocalDb = null;
 
     database.getDb = function (next) {
@@ -47,8 +47,10 @@
                         db: db,
                         poweranalysisday_jobs: db.collection("poweranalysisday_jobs"),
                         poweranalysisday_results: db.collection("poweranalysisday_results"),
+                        poweranalysisday_jobs_results: db.collection("poweranalysisday_jobs_results"),
                         poweranalysishour_jobs: db.collection("poweranalysishour_jobs"),
-                        poweranalysishour_results: db.collection("poweranalysishour_results")
+                        poweranalysishour_results: db.collection("poweranalysishour_results"),
+                        poweranalysishour_jobs_results: db.collection("poweranalysishour_jobs_results"),
                     };
                     next(null, theLocalDb);
                 }

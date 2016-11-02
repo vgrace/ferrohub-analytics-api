@@ -73,7 +73,7 @@
                 //"resultsid": resultsid,
                 "data": seedData.ResultsHourly
             };
-            res.status(200).send(analysis_results);
+            res.status(200).send(seedData.ResultsHourly);
         }
             // REAL (TEST = false)
         else {
@@ -105,7 +105,7 @@
                 }
             });
 
-            data.listen({ "resultsid": resultsid, "jobstatus": 2 }, function (err, job_results) {
+            data.hourly_listen({ "resultsid": resultsid, "jobstatus": 1 }, function (err, job_results) {
                 console.log("Listening...");
 
                 if (err) {
@@ -223,7 +223,7 @@
                 //"resultsid": id,
                 "data": seedData.ResultsHourly
             };
-            res.status(200).send(any_response);
+            res.status(200).send(seedData.ResultsHourly);
         }
             // REAL (TEST = false)
         else {
