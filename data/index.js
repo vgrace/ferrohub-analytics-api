@@ -6,69 +6,69 @@
     /*LOCAL DATABASE*/
 
     // HOURLY
-    //data.hourly_listen = function (filter, next) {
-    //    database.getLocalDb(function (err, db) {
-    //        if (err) {
-    //            next(err);
-    //        }
-    //        else {
-    //            console.log(filter);
-
-    //            // set MongoDB cursor options
-    //            var cursorOptions = {
-    //                tailable: true,
-    //                awaitdata: false,
-    //                maxTimeMS: 60000,
-    //                numberOfRetries: -1
-    //            };
-    //            //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
-    //            var cursor = db.poweranalysishour_jobs_results.find(); 
-    //            var stream = db.poweranalysishour_jobs_results.find(filter, cursorOptions).stream();
-    //            stream.on('data', function (document) {
-    //                // Close the cursor, this is the same as reseting the query
-    //                cursor.close(function (err, result) {
-    //                    //assert.equal(null, err);
-    //                    if (err) {
-    //                        next(err, null);
-    //                    }
-    //                    else {
-    //                        //console.log(document);
-    //                        next(null, document);
-    //                    }
-    //                    //db.close();
-    //                });
-                    
-    //            });
-    //        }
-    //    });
-    //}
-
-    data.hourly_listen = function (conditions, next) {
+    data.hourly_listen = function (filter, next) {
         database.getLocalDb(function (err, db) {
             if (err) {
                 next(err);
             }
             else {
-                coll = db.poweranalysishour_jobs_results
-                latestCursor = coll.find(conditions).sort({ $natural: -1 }).limit(1)
-                latestCursor.nextObject(function (err, latest) {
-                    if (latest) {
-                        conditions._id = { $gt: latest._id }
-                    }
-                    options = {
-                        tailable: true,
-                        await_data: true,
-                        numberOfRetries: -1
-                    }
-                    stream = coll.find(conditions, options).stream()
-                    stream.on('data', function (document) {
-                        console.log(document); 
-                        next(null, document);
-                    })
-                })
+                console.log(filter);
+
+                // set MongoDB cursor options
+                var cursorOptions = {
+                    tailable: true,
+                    awaitdata: false,
+                    maxTimeMS: 60000,
+                    numberOfRetries: -1
+                };
+                //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
+                var cursor = db.poweranalysishour_jobs_results.find(); 
+                var stream = db.poweranalysishour_jobs_results.find(filter, cursorOptions).stream();
+                stream.on('data', function (document) {
+                    // Close the cursor, this is the same as reseting the query
+                    cursor.close(function (err, result) {
+                        //assert.equal(null, err);
+                        if (err) {
+                            next(err, null);
+                        }
+                        else {
+                            //console.log(document);
+                            next(null, document);
+                        }
+                        //db.close();
+                    });
+                    
+                });
             }
         });
     }
+
+    //data.hourly_listen = function (conditions, next) {
+    //    database.getLocalDb(function (err, db) {
+    //        if (err) {
+    //            next(err);
+    //        }
+    //        else {
+    //            coll = db.poweranalysishour_jobs_results
+    //            latestCursor = coll.find(conditions).sort({ $natural: -1 }).limit(1)
+    //            latestCursor.nextObject(function (err, latest) {
+    //                if (latest) {
+    //                    conditions._id = { $gt: latest._id }
+    //                }
+    //                options = {
+    //                    tailable: true,
+    //                    await_data: true,
+    //                    numberOfRetries: -1
+    //                }
+    //                stream = coll.find(conditions, options).stream()
+    //                stream.on('data', function (document) {
+    //                    console.log(document); 
+    //                    next(null, document);
+    //                })
+    //            })
+    //        }
+    //    });
+    //}
 
     data.add_poweranalysishour_jobs = function (job, next) {
         database.getLocalDb(function (err, db) {
@@ -209,57 +209,57 @@
     }
 
     //DAILY
-    //data.daily_listen = function (filter, next) {
-    //    database.getLocalDb(function (err, db) {
-    //        if (err) {
-    //            next(err);
-    //        }
-    //        else {
-    //            console.log(filter);
-
-    //            // set MongoDB cursor options
-    //            var cursorOptions = {
-    //                tailable: true,
-    //                awaitdata: false,
-    //                maxTimeMS: 60000,
-    //                numberOfRetries: -1
-    //            };
-    //            //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
-    //            var stream = db.poweranalysisday_jobs_results.find(filter, cursorOptions).stream();
-    //            stream.on('data', function (document) {
-    //                //console.log(document);
-    //                next(null, document);
-    //            });
-    //        }
-    //    });
-    //}
-
-    data.daily_listen = function (conditions, next) {
+    data.daily_listen = function (filter, next) {
         database.getLocalDb(function (err, db) {
             if (err) {
                 next(err);
             }
             else {
-                coll = db.poweranalysisday_jobs_results
-                latestCursor = coll.find(conditions).sort({ $natural: -1 }).limit(1)
-                latestCursor.nextObject(function (err, latest) {
-                    if (latest) {
-                        conditions._id = { $gt: latest._id }
-                    }
-                    options = {
-                        tailable: true,
-                        await_data: true,
-                        numberOfRetries: -1
-                    }
-                    stream = coll.find(conditions, options).stream()
-                    stream.on('data', function (document) {
-                        console.log(document); 
-                        next(null, document);
-                    })
-                })
+                console.log(filter);
+
+                // set MongoDB cursor options
+                var cursorOptions = {
+                    tailable: true,
+                    awaitdata: false,
+                    maxTimeMS: 60000,
+                    numberOfRetries: -1
+                };
+                //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
+                var stream = db.poweranalysisday_jobs_results.find(filter, cursorOptions).stream();
+                stream.on('data', function (document) {
+                    //console.log(document);
+                    next(null, document);
+                });
             }
         });
     }
+
+    //data.daily_listen = function (conditions, next) {
+    //    database.getLocalDb(function (err, db) {
+    //        if (err) {
+    //            next(err);
+    //        }
+    //        else {
+    //            coll = db.poweranalysisday_jobs_results
+    //            latestCursor = coll.find(conditions).sort({ $natural: -1 }).limit(1)
+    //            latestCursor.nextObject(function (err, latest) {
+    //                if (latest) {
+    //                    conditions._id = { $gt: latest._id }
+    //                }
+    //                options = {
+    //                    tailable: true,
+    //                    await_data: true,
+    //                    numberOfRetries: -1
+    //                }
+    //                stream = coll.find(conditions, options).stream()
+    //                stream.on('data', function (document) {
+    //                    console.log(document); 
+    //                    next(null, document);
+    //                })
+    //            })
+    //        }
+    //    });
+    //}
 
     data.add_poweranalysisday_jobs = function (job, next) {
         database.getLocalDb(function (err, db) {
