@@ -59,6 +59,59 @@
         });
     }
 
+    // NULLABLE
+    data.nullable_listen = function (filter, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                console.log(filter);
+
+                // set MongoDB cursor options
+                var cursorOptions = {
+                    tailable: true,
+                    awaitdata: true,
+                    numberOfRetries: -1
+                };
+                //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
+                var stream = db.nullanalysis_jobs_results.find(filter, cursorOptions).stream();
+                stream.on('data', function (document) {
+                    //console.log(document);
+                    next(null, document);
+                });
+            }
+        });
+    }
+    data.add_nullanalysis_jobs = function (job, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.nullanalysis_jobs.insert(job, function (err) {
+                    if (err) {
+                        next(err);
+                    }
+                    else {
+                        next(null);
+                    }
+                });
+            }
+        });
+    }
+
+    data.get_nullanalysis_results = function (resultsid, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.nullanalysis_results.findOneAndDelete({ resultsid: resultsid }, next);
+            }
+        });
+    }
+
     //DAILY
     data.daily_listen = function (filter, next) {
         database.getLocalDb(function (err, db) {

@@ -14,7 +14,8 @@
             starttime = "",
             endtime = "",
             userid = "",
-            isTest = false;
+            isTest = false,
+            nullanalysis = false;
         if (req.swagger && req.swagger.body) {
             energyhubid = req.swagger.body.energyhubid;
             starttime = req.swagger.body.starttime;
@@ -28,7 +29,10 @@
             endtime = req.body.endtime;
             userid = req.body.userid;
             isTest = typeof req.query.test === 'undefined' ? false : req.query.test !== "false";
+            nullanalysis = typeof req.query.nullanalysis === 'undefined' ? false : req.query.nullanalysis !== "false";
         }
+
+        
 
         //Express validator
         req.assert('energyhubid', 'Invalid parameter: this parameter cannot be empty').notEmpty();
@@ -51,9 +55,91 @@
             res.status(400).send(cust_error);
             return;
         }
+        // NULLABLE BASELINE TEST
+        if (nullanalysis) {
+            console.log("NULLABLE ON");
+            // Create job
+            var job = {
+                "energyhubid": energyhubid,
+                "starttime": new Date(starttime),
+                "endtime": new Date(endtime),
+                "userid": userid,
+                "resultsid": resultsid,
+                "analysismodel": "DAILYPOWER",
+                "jobstatus": 0,
+                "timestamp": new Date()
+            };
 
+            // Save job to local db
+            data.add_nullanalysis_jobs(job, function (err) {
+                if (err) {
+                    console.log(err);
+                    var err_msg = {
+                        "code": 0,
+                        "message": err,
+                        "fields": ""
+                    };
+                    res.status(500).send(err_msg);
+                }
+                else {
+                    console.log('Saved to local db');
+                }
+            });
+
+            data.nullable_listen({ "resultsid": resultsid, "jobstatus": 1 }, function (err, job_results) {
+                console.log("Listening...");
+
+                if (err) {
+                    console.log(err);
+                    var err_msg = {
+                        "code": 0,
+                        "message": err,
+                        "fields": ""
+                    };
+
+                    res.status(500).send(err_msg);
+                }
+                else {
+                    console.log("The log stating there are results to retrieve");
+                    console.log(job_results);
+
+                    var results_found = {
+                        "energyhubid": "Yay!",
+                        "starttime": "2016-10-21T09:18:29.977Z",
+                        "endtime": "2016-10-21T09:18:29.977Z",
+                        "userid": "string",
+                        "resultsid": "string",
+                        "analysismodel": "DAILYPOWER",
+                        "processingstatus": "PENDING",
+                        "resultslink": "string"
+                    };
+
+                    //res.status(201).send(results_found);
+
+                    data.get_nullanalysis_results(resultsid, function (err, final_results) {
+                        if (err) {
+                            console.log(err);
+                            var err_msg = {
+                                "code": 0,
+                                "message": err,
+                                "fields": ""
+                            };
+                            res.status(500).send(err_msg);
+                        }
+                        else {
+                            console.log("Returning the results yao!");
+                            var del = delete final_results.value._id;
+                            var del_resultsid = delete final_results.value.resultsid;
+                            var del_jobstatus = delete final_results.value.jobstatus;
+                            var del_model = delete final_results.value.analysismodel;
+                            res.send(final_results.value);
+                        }
+                    });
+                }
+            });
+        }
         // TEST
-        if (isTest) {
+        else if (isTest) {
             var analysis_job = {
                 "energyhubid": energyhubid,
                 "starttime": new Date(starttime),
@@ -75,7 +161,7 @@
             };
             res.status(200).send(analysis_results);
         }
-            // REAL (TEST = false)
+        // REAL (TEST = false)
         else {
             // Create job
             var job = {
@@ -86,6 +172,7 @@
                 "resultsid": resultsid,
                 "analysismodel": "DAILYPOWER",
                 "jobstatus": 0,
+                "timestamp": new Date()
             };
 
             // Save job to local db
@@ -155,38 +242,6 @@
                     });
                 }
             });
-
-            // Poll until there is results
-            /*getResults(resultsid, polling);
-
-            function polling(err, results) {
-                if (err) {
-                    console.log(err);
-                    var err_msg = {
-                        "code": 0,
-                        "message": err,
-                        "fields": ""
-                    };
-
-                    res.status(500).send(err_msg);
-                }
-                else {
-                    if (results.value === null) {
-                        //No data yet call again
-                        console.log("No data yet, call again");
-                        getResults(resultsid, polling);
-                    }
-                    else {
-                        //Found data
-                        console.log("Data found");
-                        var del = delete results.value._id;
-                        var del_resultsid = delete results.value.resultsid;
-                        var del_jobstatus = delete results.value.jobstatus;
-                        var del_model = delete results.value.analysismodel;
-                        res.send(results.value);
-                    }
-                }
-            }*/
         }
     }
 

@@ -51,6 +51,9 @@
                         poweranalysishour_jobs: db.collection("poweranalysishour_jobs"),
                         poweranalysishour_results: db.collection("poweranalysishour_results"),
                         poweranalysishour_jobs_results: db.collection("poweranalysishour_jobs_results"),
+                        nullanalysis_jobs: db.collection("nullanalysis_jobs"),
+                        nullanalysis_results: db.collection("nullanalysis_results"),
+                        nullanalysis_jobs_results: db.collection("nullanalysis_jobs_results")
                     };
                     next(null, theLocalDb);
                 }

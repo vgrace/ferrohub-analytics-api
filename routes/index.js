@@ -1,6 +1,6 @@
 ﻿var express = require('express');
 var router = express.Router();
-var analysis = require('../api/controllers/poweranalysisday'); 
+//var analysis = require('../api/controllers/poweranalysisday'); 
 var crypto = require('crypto');
 var data = require('../data');
 
