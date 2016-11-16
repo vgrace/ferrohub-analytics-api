@@ -17,7 +17,7 @@
                 // set MongoDB cursor options
                 var cursorOptions = {
                     tailable: true,
-                    awaitdata: true,
+                    awaitdata: false,
                     maxTimeMS: 60000,
                     numberOfRetries: -1
                 };
@@ -103,9 +103,9 @@
                 // set MongoDB cursor options
                 var cursorOptions = {
                     tailable: true,
-                    awaitdata: true,
-                    maxTimeMS: 60000,
-                    numberOfRetries: -1
+                    awaitdata: false,
+                    maxTimeMS: 5000,
+                    numberOfRetries: 10,
                 };
 
                 //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
@@ -114,6 +114,29 @@
                     //console.log(document);
                     next(null, document);
                 });
+            }
+        });
+    }
+    data.nullable_listen_test = function (conditions, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                coll = db.nullanalysis_jobs_results.find({})
+                latestCursor = coll.find(conditions).sort({ $natural: -1 }).limit(1)
+                latestCursor.nextObject(function (err, latest) {
+                    if (latest) {
+                        conditions._id = { $gt: latest._id }
+                    }
+                    options = {
+                        tailable: true,
+                        await_data: true,
+                        numberOfRetries: -1
+                    }
+                    stream = coll.find(conditions, options).sort({ $natural: -1 }).stream()
+                    stream.on('data', next)
+                })
             }
         });
     }
@@ -167,7 +190,7 @@
                 // set MongoDB cursor options
                 var cursorOptions = {
                     tailable: true,
-                    awaitdata: true,
+                    awaitdata: false,
                     maxTimeMS: 60000,
                     numberOfRetries: -1
                 };
