@@ -17,15 +17,27 @@
                 // set MongoDB cursor options
                 var cursorOptions = {
                     tailable: true,
-                    awaitdata: true,
+                    awaitdata: false,
                     maxTimeMS: 60000,
                     numberOfRetries: -1
                 };
                 //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
+                var cursor = db.poweranalysishour_jobs_results.find(); 
                 var stream = db.poweranalysishour_jobs_results.find(filter, cursorOptions).stream();
                 stream.on('data', function (document) {
-                    //console.log(document);
-                    next(null, document);
+                    // Close the cursor, this is the same as reseting the query
+                    cursor.close(function (err, result) {
+                        //assert.equal(null, err);
+                        if (err) {
+                            next(err, null);
+                        }
+                        else {
+                            //console.log(document);
+                            next(null, document);
+                        }
+                        //db.close();
+                    });
+                    
                 });
             }
         });
@@ -60,6 +72,25 @@
         });
     }
 
+    data.test = function (next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.nullanalysis_jobs.findOne({ }, function (err, results) {
+                    if (err) {
+                        next(err, null);
+                    }
+                    else {
+                        next(null, results);
+                    }
+
+                });
+            }
+        });
+    }
+
     // NULLABLE
     data.nullable_listen = function (filter, next) {
         database.getLocalDb(function (err, db) {
@@ -72,10 +103,11 @@
                 // set MongoDB cursor options
                 var cursorOptions = {
                     tailable: true,
-                    awaitdata: true,
+                    awaitdata: false,
                     maxTimeMS: 60000,
                     numberOfRetries: -1
                 };
+
                 //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
                 var stream = db.nullanalysis_jobs_results.find(filter, cursorOptions).stream();
                 stream.on('data', function (document) {
@@ -109,7 +141,16 @@
                 next(err);
             }
             else {
-                db.nullanalysis_results.findOneAndDelete({ resultsid: resultsid }, next);
+                //db.nullanalysis_results.findOneAndDelete({ resultsid: resultsid }, next);
+                db.nullanalysis_results.findOneAndDelete({ resultsid: resultsid }, function (err, results) {
+                    if (err) {
+                        next(err, null); 
+                    }
+                    else {
+                        next(null, results);
+                    }
+                    
+                });
             }
         });
     }
@@ -126,7 +167,7 @@
                 // set MongoDB cursor options
                 var cursorOptions = {
                     tailable: true,
-                    awaitdata: true,
+                    awaitdata: false,
                     maxTimeMS: 60000,
                     numberOfRetries: -1
                 };

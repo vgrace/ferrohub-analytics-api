@@ -160,7 +160,22 @@
                 //"resultsid": resultsid,
                 "data": seedData.getKwhData(seedData.ResultsDataArr, "DAY") //seedData.ResultsDataArr
             };
-            res.status(200).send(analysis_results);
+            data.test(function (err, results) {
+                if (err) {
+                    console.log(err);
+                    var err_msg = {
+                        "code": 0,
+                        "message": err,
+                        "fields": ""
+                    };
+                    res.status(500).send(err_msg);
+                }
+                else {
+                    console.log(results); 
+                    res.status(200).send(analysis_results);
+                }
+            })
+            //res.status(200).send(analysis_results);
         }
         // REAL (TEST = false)
         else {
