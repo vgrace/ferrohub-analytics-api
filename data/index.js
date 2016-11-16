@@ -17,7 +17,7 @@
                 // set MongoDB cursor options
                 var cursorOptions = {
                     tailable: true,
-                    awaitdata: false,
+                    awaitdata: true,
                     maxTimeMS: 60000,
                     numberOfRetries: -1
                 };
@@ -103,7 +103,7 @@
                 // set MongoDB cursor options
                 var cursorOptions = {
                     tailable: true,
-                    awaitdata: false,
+                    awaitdata: true,
                     maxTimeMS: 60000,
                     numberOfRetries: -1
                 };
@@ -167,7 +167,7 @@
                 // set MongoDB cursor options
                 var cursorOptions = {
                     tailable: true,
-                    awaitdata: false,
+                    awaitdata: true,
                     maxTimeMS: 60000,
                     numberOfRetries: -1
                 };
