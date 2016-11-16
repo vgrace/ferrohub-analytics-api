@@ -18,6 +18,7 @@
                 var cursorOptions = {
                     tailable: true,
                     awaitdata: true,
+                    maxTimeMS: 60000,
                     numberOfRetries: -1
                 };
                 //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
@@ -72,6 +73,7 @@
                 var cursorOptions = {
                     tailable: true,
                     awaitdata: true,
+                    maxTimeMS: 60000,
                     numberOfRetries: -1
                 };
                 //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
@@ -125,6 +127,7 @@
                 var cursorOptions = {
                     tailable: true,
                     awaitdata: true,
+                    maxTimeMS: 60000,
                     numberOfRetries: -1
                 };
                 //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
