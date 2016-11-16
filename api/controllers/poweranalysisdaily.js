@@ -132,6 +132,7 @@
                             var del_resultsid = delete final_results.value.resultsid;
                             var del_jobstatus = delete final_results.value.jobstatus;
                             var del_model = delete final_results.value.analysismodel;
+                            final_results.value["returntimestamp"] = new Date()
                             res.send(final_results.value);
                         }
                     });
