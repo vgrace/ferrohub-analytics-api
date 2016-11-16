@@ -86,6 +86,7 @@
                 }
             });
 
+
             data.nullable_listen_test({ "resultsid": resultsid, "jobstatus": 1 }, function (err, job_results) {
                 console.log("Listening...");
 
