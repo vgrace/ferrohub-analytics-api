@@ -135,6 +135,7 @@
                             var del_model = delete final_results.value.analysismodel;
                             final_results.value["returntimestamp"] = new Date()
                             res.send(final_results.value);
+                            console.log("Still here.. "); 
                         }
                     });
                 }
@@ -174,6 +175,7 @@
                 else {
                     console.log(results); 
                     res.status(200).send(analysis_results);
+                    console.log("Still here...");
                 }
             })
             //res.status(200).send(analysis_results);

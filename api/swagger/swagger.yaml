@@ -1,7 +1,7 @@
 # H2020 Ferroamp Analytics Server REST API
 swagger: '2.0'
 info:
-  title: Analytics Server REST API
+  title: Analytics Server REST API test
   description: H2020 Ferroamp Analytics Server REST API.
 
   version: "0.1.3 / 2016-10-14"
@@ -151,6 +151,71 @@ paths:
           $ref: '#/responses/DefaultErrorResponse'
  
 
+  /loadeventdetection:
+      # our controller name
+      x-swagger-router-controller: loadeventdetection
+      post:
+        summary: The endpoint used to initiate and get load events for a facility.
+        description: Each data point corresponds to an event, during which a certain amount current was drawn on one of the phase-legs for a specific duration. Timestamps for the last 10 events are reported. 
+        operationId: make_loadeventdetection_analysis
+        tags: [Load Event Detection]
+        produces:
+          - application/json
+        parameters:
+          - $ref: "#/parameters/testQParam"
+          - name: analysisparams
+            in: body
+            schema: 
+              $ref: "#/definitions/GenericAnalysisRequest"
+        responses:
+          200:
+            description: OK - Analysis result available.
+            schema:
+              $ref: '#/definitions/LoadEventDetectionData'        
+          201: 
+            description: CREATED - A receipt for an analysis result, contains unique id and link to where the result will be available.
+            schema:
+              $ref: '#/definitions/GenericAnalysisResultCreated'
+          400:
+            $ref: '#/responses/ErrorResponse400'
+          500:
+            $ref: '#/responses/ErrorResponse500'
+          default:
+            $ref: '#/responses/DefaultErrorResponse' 
+    
+ 
+  /loadeventdetection/{resultsid}:
+    # our controller name
+    x-swagger-router-controller: loadeventdetection
+    get:
+      summary: The endpoint used to check the status and get the results of a specific load event detection analysis job.
+      description:  This endpoint is used for Load Event Detection.
+      operationId: get_loadeventdetection_result
+      tags: [Load Event Detection]
+      produces:
+        - application/json
+      parameters:
+        - $ref: "#/parameters/testQParam"
+        - $ref: "#/parameters/resultsidQParam"
+      responses:
+        200:
+          description: OK - Analysis result available.
+          schema:
+            $ref: '#/definitions/LoadEventDetectionData'
+        400:
+          $ref: '#/responses/ErrorResponse400'
+        404:
+          description: Not found - Analysis result does not exist due to an unknown resultsid or that the analysis process is not yet completed.
+          schema:
+            $ref: '#/definitions/AnalysisResultsMetaData'
+        410:
+          description: Gone - Analysis result has expired and is no longer available.
+          schema:
+            $ref: '#/definitions/AnalysisResultsMetaData'
+        500:
+          $ref: '#/responses/ErrorResponse500'
+        default:
+          $ref: '#/responses/DefaultErrorResponse'
  
  
 definitions:
@@ -292,7 +357,57 @@ definitions:
         description: L3 active intermittent power
         
         
+# ***************************** Load Event Detection
+
+  LoadEventDetectionData:
+    allOf:
+      - $ref: '#/definitions/GenericAnalysisRequest'
+      - $ref: '#/definitions/LoadEventDetectionDataContent'
+
+  LoadEventDetectionDataContent:
+    type: object
+    properties:
+      data:
+        type: object
         
+
+  ArrayOfFloats:
+    type: array
+    items: 
+      type: number
+      format: float
+
+  ArrayOfIntegers:
+    type: array
+    items: 
+      type: number
+
+  ArrayOfIntegerArrays:
+    type: array
+    items: 
+      type: array
+      items:
+        $ref: "#/definitions/ArrayOfIntegers"
+
+  Bins:
+    type: object
+    required:
+      - label
+      - unit
+      - intervals
+    properties:
+      label:
+        type: string
+        description: Label of the bin.
+      unit:
+        type: string
+        description: Unit of the bin
+      intervals:
+        type: array
+        description: Bin intervals
+        items:
+          $ref: "#/definitions/ArrayOfFloats"
+          
         
 # Common objects
 
@@ -314,6 +429,9 @@ definitions:
       userid:
         type: string
         description: The user that requests the job.
+      histtype:
+        type: string
+        description: Histtype is ”signature” or ”scatter”. 
 
   GenericAnalysisResultCreated:
     allOf:
@@ -336,8 +454,9 @@ definitions:
         type: string
         description: ID for the analysis model.
         enum:
-          - DAILYPOWER
-          - HOURLYPOWER
+          - POWERANALYSISDAY
+          - POWERANALYSISHOURLY
+          - DAILYTREND
       processingstatus:
         type: string
         description: processing status for the result.

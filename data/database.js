@@ -53,7 +53,10 @@
                         poweranalysishour_jobs_results: db.collection("poweranalysishour_jobs_results"),
                         nullanalysis_jobs: db.collection("nullanalysis_jobs"),
                         nullanalysis_results: db.collection("nullanalysis_results"),
-                        nullanalysis_jobs_results: db.collection("nullanalysis_jobs_results")
+                        nullanalysis_jobs_results: db.collection("nullanalysis_jobs_results"),
+                        loadeventdetection_jobs: db.collection("load_event_detection_jobs"), // New
+                        loadeventdetection_results: db.collection("load_event_detection_results"), // New
+
                     };
                     next(null, theLocalDb);
                 }

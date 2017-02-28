@@ -5,6 +5,37 @@
 
     /*LOCAL DATABASE*/
 
+    // LOADEVENTDETECTION
+
+    data.get_loadeventdetection_results = function (resultsid, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.loadeventdetection_results.findOneAndDelete({ resultsid: resultsid }, next);
+            }
+        });
+    }
+
+    data.add_loadeventdetection_jobs = function (job, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.loadeventdetection_jobs.insert(job, function (err) {
+                    if (err) {
+                        next(err);
+                    }
+                    else {
+                        next(null);
+                    }
+                });
+            }
+        });
+    }
+
     // HOURLY
     data.hourly_listen = function (filter, next) {
         database.getLocalDb(function (err, db) {
@@ -150,8 +181,8 @@
                 next(err);
             }
             else {
-                coll = db.nullanalysis_jobs_results
-                latestCursor = coll.find(conditions).sort({ $natural: -1 }).limit(1)
+                var coll = db.nullanalysis_jobs_results
+                var latestCursor = coll.find(conditions).sort({ $natural: -1 }).limit(1)
                 latestCursor.nextObject(function (err, latest) {
                     if (latest) {
                         conditions._id = { $gt: latest._id }
@@ -159,12 +190,23 @@
                     options = {
                         tailable: true,
                         await_data: true,
-                        numberOfRetries: -1
+                        maxTimeMS: 5000,
+                        numberOfRetries: 10,
                     }
-                    stream = coll.find(conditions, options).stream()
+                    var stream = coll.find(conditions, options).stream(); 
                     stream.on('data', function (document) {
-                        console.log(document); 
-                        next(null, document);
+                        console.log("Found new results job!"); 
+                        console.log(document);
+                        latestCursor.close(function (err, result) {
+                            if (err) {
+                                next(err, null);
+                            }
+                            else {
+                                next(null, document);
+                            }
+                            db.close();
+                        });
+                        
                     })
                 })
             }
@@ -290,7 +332,7 @@
         });
     }
 
-    /*DATABASE*/
+    /*DATABASE MLAB TEST DB*/
 
     //Post poweranalysisjob
     data.addPowerAnalysisTrendJob = function (jobToInsert, next) {
