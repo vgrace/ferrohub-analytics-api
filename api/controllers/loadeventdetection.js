@@ -899,7 +899,7 @@
                         "resultsid": resultsid,
                         "analysismodel": "LOADEVENTDETECTION",
                         "processingstatus": "PENDING",
-                        "resultslink": "http://localhost:8080/analytics/v0_1_3/loadeventdetection/" + resultsid
+                        "resultslink": "http://dev.ferroamp.se/analytics/v0_1_3/loadeventdetection/" + resultsid
                     };
                     res.status(201).send(t);
                     console.log('Saved to local db');
