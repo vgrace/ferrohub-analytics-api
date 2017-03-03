@@ -62,7 +62,7 @@
             };
 
             // TEST SAVE RESULTS
-            /*var errTest = {
+            var errTest = {
                 "energyhubid": energyhubid,
                 "starttime": new Date(starttime),
                 "endtime": new Date(endtime),
@@ -70,10 +70,22 @@
                 "histtype": histtype,
                 "resultsid": resultsid,
                 "jobstatus": -1,
-                "data": "O no something bad happend"
+                "data": { "message": "O no something bad happend" } //"O no something bad happend"
             };
 
-            
+            var resTest = {
+                "starttime": new Date(starttime),
+                "resultsid": resultsid,
+                "analysismodel": "LOADEVENTDETECTION",
+                "userid": "888",
+                "energyhubid": "78:a5:04:ff:40:bb",
+                "data": { "message": "O no something bad happend" },
+                "histtype": "signature",
+                "jobstatus": -1,
+                "endtime": new Date(endtime),
+                "timestamp": new Date()
+            };
+
             data.addPowerAnalysisTrendResults(errTest, function (err) {
                 if (err) {
                     console.log("Error adding results");
@@ -82,10 +94,10 @@
                 else {
                     console.log("Results saved");
                 }
-            });*/
+            });
 
             // Save job to local db Mlabs: //addPowerAnalysisTrendJob, local: //add_loadeventdetection_jobs
-            data.add_loadeventdetection_jobs(job, function (err) {
+            data.addPowerAnalysisTrendJob(job, function (err) {
                 if (err) {
                     console.log(err);
                     var err_msg = {
@@ -226,7 +238,7 @@ loadeventdetection.get_loadeventdetection_result = function (req, res, next) {
     // String querys
     var id = req.swagger.params.resultsid.value;
     var isTest = req.swagger.params.test.value === "" ? true : req.swagger.params.test.value;
-
+    res.set("Content-Type", "application/json");
     // TEST
     if (isTest) {
         var test_sig = {
@@ -1116,7 +1128,7 @@ loadeventdetection.get_loadeventdetection_result = function (req, res, next) {
     else {
         //Mlabs: //getPowerAnalysisTrendResults,  local db: //get_loadeventdetection_results
         console.log(id); 
-        data.get_loadeventdetection_results(id, function (err, analysisResults) {
+        data.getPowerAnalysisTrendResults(id, function (err, analysisResults) {
             var resultsData = analysisResults.value;
             //console.log(resultsData);
             if (err) {
@@ -1140,7 +1152,7 @@ loadeventdetection.get_loadeventdetection_result = function (req, res, next) {
                     res.status(404).send(not_found);
                 }
                 else {
-                    res.set("Content-Type", "application/json");
+                    
                     //Object found with results -> 200
                     //console.log('--------------'); 
                     //console.log(resultsData.data);
@@ -1148,18 +1160,19 @@ loadeventdetection.get_loadeventdetection_result = function (req, res, next) {
                         if (resultsData.jobstatus === -1) {
                             var errRes = {
                                 "code": 0,
-                                "message": resultsData.data,
+                                "message": resultsData.data.message,
                                 "fields": ""
                             };
                             res.status(400).send(errRes);
                         }
-
-                        var del = delete resultsData._id;
-                        var del_resultsid = delete resultsData.resultsid;
-                        var del_jobstatus = delete resultsData.jobstatus;
-                        var del_model = delete resultsData.analysismodel;
-                        console.log(del);
-                        res.send(resultsData);
+                        else {
+                            var del = delete resultsData._id;
+                            var del_resultsid = delete resultsData.resultsid;
+                            var del_jobstatus = delete resultsData.jobstatus;
+                            var del_model = delete resultsData.analysismodel;
+                            console.log(del);
+                            res.send(resultsData);
+                        }
                     }
                     else {
                         //No results yet -> 404
