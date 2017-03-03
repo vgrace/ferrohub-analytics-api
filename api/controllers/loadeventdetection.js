@@ -62,7 +62,7 @@
             };
 
             // TEST SAVE RESULTS
-            var errTest = {
+            /*var errTest = {
                 "energyhubid": energyhubid,
                 "starttime": new Date(starttime),
                 "endtime": new Date(endtime),
@@ -94,10 +94,10 @@
                 else {
                     console.log("Results saved");
                 }
-            });
+            });*/
 
             // Save job to local db Mlabs: //addPowerAnalysisTrendJob, local: //add_loadeventdetection_jobs
-            data.addPowerAnalysisTrendJob(job, function (err) {
+            data.add_loadeventdetection_jobs(job, function (err) {
                 if (err) {
                     console.log(err);
                     var err_msg = {
@@ -1128,7 +1128,7 @@ loadeventdetection.get_loadeventdetection_result = function (req, res, next) {
     else {
         //Mlabs: //getPowerAnalysisTrendResults,  local db: //get_loadeventdetection_results
         console.log(id); 
-        data.getPowerAnalysisTrendResults(id, function (err, analysisResults) {
+        data.get_loadeventdetection_results(id, function (err, analysisResults) {
             var resultsData = analysisResults.value;
             //console.log(resultsData);
             if (err) {
