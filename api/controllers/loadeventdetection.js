@@ -1121,8 +1121,9 @@ loadeventdetection.get_loadeventdetection_result = function (req, res, next) {
         //Mlabs: //getPowerAnalysisTrendResults,  local db: //get_loadeventdetection_results
         console.log(id); 
         data.get_loadeventdetection_results(id, function (err, analysisResults) {
-            var resultsData = analysisResults.value;
-            //console.log(resultsData);
+            console.log(analysisResults);
+            
+            
             if (err) {
                 //Server error -> 500
                 var err_msg = {
@@ -1133,7 +1134,8 @@ loadeventdetection.get_loadeventdetection_result = function (req, res, next) {
                 res.status(500).send(err_msg);
             }
             else {
-                if (resultsData === null) {
+                
+                if (analysisResults === null) {
                     // Results not found -> 404
                     var not_found = {
                         "resultsid": id,
@@ -1144,7 +1146,7 @@ loadeventdetection.get_loadeventdetection_result = function (req, res, next) {
                     res.status(404).send(not_found);
                 }
                 else {
-                    
+                    var resultsData = analysisResults.value;
                     //Object found with results -> 200
                     //console.log('--------------'); 
                     //console.log(resultsData.data);
