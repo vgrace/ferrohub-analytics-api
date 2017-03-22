@@ -13,7 +13,8 @@
                 next(err);
             }
             else {
-                db.loadeventdetection_results.findOneAndDelete({ resultsid: resultsid }, next);
+                //db.loadeventdetection_results.findOneAndDelete({ resultsid: resultsid }, next);
+                db.loadeventdetection_results.findOne({ resultsid: resultsid }, next);
             }
         });
     }

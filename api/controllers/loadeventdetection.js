@@ -1133,7 +1133,7 @@ loadeventdetection.get_loadeventdetection_result = function (req, res, next) {
                 res.status(500).send(err_msg);
             }
             else {
-                if (resultsData == null) {
+                if (resultsData === null) {
                     // Results not found -> 404
                     var not_found = {
                         "resultsid": id,
