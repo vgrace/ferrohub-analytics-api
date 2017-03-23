@@ -362,6 +362,9 @@
     ],
     "parameters": [
      {
+      "$ref": "#/parameters/testQParam"
+     },
+     {
       "$ref": "#/parameters/energyhubidQParam"
      }
     ],

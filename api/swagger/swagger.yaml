@@ -248,6 +248,7 @@ paths:
       produces:
         - application/json
       parameters:
+        - $ref: "#/parameters/testQParam"
         - $ref: "#/parameters/energyhubidQParam"
       responses:
         200:
