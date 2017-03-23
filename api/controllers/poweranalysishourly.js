@@ -97,7 +97,12 @@
                         "message": err,
                         "fields": ""
                     };
-                    res.status(500).send(err_msg);
+                    if (err.indexOf('MANY') > 0) {
+                        res.status(429).send(err_msg);
+                    }
+                    else {
+                        res.status(500).send(err_msg);
+                    }
                 }
                 else {
                     console.log('Saved to local db');

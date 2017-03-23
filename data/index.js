@@ -7,6 +7,25 @@
 
     // LOADEVENTDETECTION
 
+    data.get_all_loadeventdetection_results = function (energyhubid, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                //db.loadeventdetection_results.findOneAndDelete({ resultsid: resultsid }, next);
+                db.loadeventdetection_results.find({ energyhubid: energyhubid }, { data: 0 }).toArray(function (err, listResults) {
+                    if (err) {
+                        next(err, null);
+                    }
+                    else {
+                        next(null, listResults); 
+                    }
+                });
+            }
+        });
+    }
+
     data.get_loadeventdetection_results = function (resultsid, next) {
         database.getLocalDb(function (err, db) {
             if (err) {
@@ -25,14 +44,24 @@
                 next(err);
             }
             else {
-                db.loadeventdetection_jobs.insert(job, function (err) {
-                    if (err) {
-                        next(err);
+                // Check if there are pending jobs, jobstatus = 0
+                db.loadeventdetection_jobs.find({ energyhubid: job.energyhubid, jobstatus: 0 }).count().then(function (pendingJobs) {
+                    console.log(pendingJobs);
+                    if (pendingJobs > 0) {
+                        next('TOO MANY REQUESTS');
                     }
                     else {
-                        next(null);
+                        db.loadeventdetection_jobs.insert(job, function (err) {
+                            if (err) {
+                                next(err);
+                            }
+                            else {
+                                next(null);
+                            }
+                        });
                     }
                 });
+                
             }
         });
     }
@@ -51,7 +80,8 @@
                     tailable: true,
                     awaitdata: false,
                     maxTimeMS: 60000,
-                    numberOfRetries: -1
+                    numberOfRetries: -1,
+                    tailableRetryInterval: 10000
                 };
                 //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
                 var cursor = db.poweranalysishour_jobs_results.find(); 
@@ -108,12 +138,20 @@
                 next(err);
             }
             else {
-                db.poweranalysishour_jobs.insert(job, function (err) {
-                    if (err) {
-                        next(err);
+                db.poweranalysishour_jobs.find({ energyhubid: job.energyhubid, jobstatus: 0 }).count().then(function (pendingJobs) {
+                    console.log(pendingJobs);
+                    if (pendingJobs > 0) {
+                        next('TOO MANY REQUESTS');
                     }
                     else {
-                        next(null);
+                        db.poweranalysishour_jobs.insert(job, function (err) {
+                            if (err) {
+                                next(err);
+                            }
+                            else {
+                                next(null);
+                            }
+                        });
                     }
                 });
             }
@@ -165,6 +203,7 @@
                     awaitdata: false,
                     maxTimeMS: 5000,
                     numberOfRetries: 10,
+                    tailableRetryInterval: 10000
                 };
 
                 //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
@@ -253,24 +292,28 @@
 
     //DAILY
     data.daily_listen = function (filter, next) {
+        console.log('daily listen...'); 
         database.getLocalDb(function (err, db) {
+            console.log('get local db...');
             if (err) {
                 next(err);
             }
             else {
                 console.log(filter);
-
+                console.log('db no error...');
                 // set MongoDB cursor options
                 var cursorOptions = {
                     tailable: true,
                     awaitdata: false,
                     maxTimeMS: 60000,
-                    numberOfRetries: -1
+                    numberOfRetries: -1,
+                    tailableRetryInterval: 10000
                 };
                 //var stream = db.poweranalysishour_jobs.find(filter, cursorOptions).addCursorFlag('tailable', true).addCursorFlag('awaitData', true).setCursorOption('numberOfRetries', -1).stream();
                 var stream = db.poweranalysisday_jobs_results.find(filter, cursorOptions).stream();
+                console.log('after stream...');
                 stream.on('data', function (document) {
-                    //console.log(document);
+                    console.log("In stream on");
                     next(null, document);
                 });
             }
@@ -310,12 +353,20 @@
                 next(err);
             }
             else {
-                db.poweranalysisday_jobs.insert(job, function (err) {
-                    if (err) {
-                        next(err);
+                db.poweranalysisday_jobs.find({ energyhubid: job.energyhubid, jobstatus: 0 }).count().then(function (pendingJobs) {
+                    console.log(pendingJobs);
+                    if (pendingJobs > 0) {
+                        next('TOO MANY REQUESTS');
                     }
                     else {
-                        next(null);
+                        db.poweranalysisday_jobs.insert(job, function (err) {
+                            if (err) {
+                                next(err);
+                            }
+                            else {
+                                next(null);
+                            }
+                        });
                     }
                 });
             }
@@ -413,6 +464,24 @@
             }
             else {
                 db.poweranalysisdays.insert(analysisResultsToInsert, function (err) {
+                    if (err) {
+                        next(err);
+                    }
+                    else {
+                        next(null);
+                    }
+                })
+            }
+        });
+    }
+
+    data.addLoadEventResults = function (analysisResultsToInsert, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.loadeventdetection_results.insert(analysisResultsToInsert, function (err) {
                     if (err) {
                         next(err);
                     }
