@@ -217,6 +217,26 @@ paths:
         default:
           $ref: '#/responses/DefaultErrorResponse'
           
+    delete:
+      summary: Delete load event results
+      description: This endpoint is used for Load Event Detection.
+      operationId: delete_loadeventdetection_result
+      tags: [Load Event Detection]
+      produces:
+        - application/json
+      parameters:
+        - $ref: "#/parameters/resultsidQParam"
+      responses:
+        200:
+          description: OK - Analysis result was deleted.
+          schema:
+            $ref: '#/definitions/LoadEventDetectionDeleteResponse'
+        500:
+          $ref: '#/responses/ErrorResponse500'
+        default:
+          $ref: '#/responses/DefaultErrorResponse'
+        
+          
   /loadeventdetection/analysis/{energyhubid}:
     # our controller name
     x-swagger-router-controller: loadeventdetection
@@ -380,6 +400,15 @@ definitions:
         
         
 # ***************************** Load Event Detection
+  LoadEventDetectionDeleteResponse:
+    type: object
+    properties:
+      resultsid:
+        type: string
+        description: Resultsid of deleted analysis
+      message:
+        type: string
+        description: Message
 
   LoadEventDetectionData:
     allOf:

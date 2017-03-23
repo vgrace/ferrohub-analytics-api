@@ -7,13 +7,23 @@
 
     // LOADEVENTDETECTION
 
+    data.delete_loadeventdetection_results = function (resultsid, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                db.loadeventdetection_results.deleteOne({ resultsid: resultsid }, next);
+            }
+        });
+    }
+
     data.get_all_loadeventdetection_results = function (energyhubid, next) {
         database.getLocalDb(function (err, db) {
             if (err) {
                 next(err);
             }
             else {
-                //db.loadeventdetection_results.findOneAndDelete({ resultsid: resultsid }, next);
                 db.loadeventdetection_results.find({ energyhubid: energyhubid }, { data: 0 }).toArray(function (err, listResults) {
                     if (err) {
                         next(err, null);
