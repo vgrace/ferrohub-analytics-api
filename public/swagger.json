@@ -348,12 +348,45 @@
     }
    }
   },
-  "/loadeventdetection/analysis/{energyhubid}": {
+  "/loadeventdetection/results/{energyhubid}": {
    "x-swagger-router-controller": "loadeventdetection",
    "get": {
     "summary": "The endpoint used to list all analysis made for a specific energyhub",
     "description": "This endpoint is used for Load Event Detection.",
     "operationId": "get_loadeventdetection_analysis",
+    "tags": [
+     "Load Event Detection"
+    ],
+    "produces": [
+     "application/json"
+    ],
+    "parameters": [
+     {
+      "$ref": "#/parameters/energyhubidQParam"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK - Analysis list available.",
+      "schema": {
+       "$ref": "#/definitions/LoadEventDetectionAnalysisArray"
+      }
+     },
+     "500": {
+      "$ref": "#/responses/ErrorResponse500"
+     },
+     "default": {
+      "$ref": "#/responses/DefaultErrorResponse"
+     }
+    }
+   }
+  },
+  "/loadeventdetection/jobs/{energyhubid}": {
+   "x-swagger-router-controller": "loadeventdetection",
+   "get": {
+    "summary": "The endpoint used to return a pending job for a specific energyhub",
+    "description": "This endpoint is used for Load Event Detection",
+    "operationId": "get_loadeventdetection_status",
     "tags": [
      "Load Event Detection"
     ],
@@ -372,7 +405,7 @@
      "200": {
       "description": "OK - Analysis list available.",
       "schema": {
-       "$ref": "#/definitions/LoadEventDetectionAnalysisArray"
+       "$ref": "#/definitions/GenericAnalysisRequest"
       }
      },
      "500": {

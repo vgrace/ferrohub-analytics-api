@@ -1202,6 +1202,37 @@
         }
     }; 
 
+    loadeventdetection.delete_loadeventdetection_result = function (req, res, next) {
+        var id = req.swagger.params.resultsid.value;
+        res.set("Content-Type", "application/json");
+        data.delete_loadeventdetection_results(id, function (err, results) {
+            if (err) {
+                //Server error -> 500
+                var err_msg = {
+                    "code": 0,
+                    "message": "Internal Server Error: " + err,
+                    "fields": ""
+                };
+                res.status(500).send(err_msg);
+            }
+            else {
+                console.log(results.result);
+                var nrDeletedDocs = results.result.n;
+                var del_res = {
+                    "resultsid": id,
+                    "message": "The analysis was successfully deleted"
+                };
+                if (nrDeletedDocs <= 0) {
+                    del_res = {
+                        "resultsid": id,
+                        "message": "The analysis was not found, nothing was deleted"
+                    };
+                }
+                res.status(200).send(del_res);
+            }
+        });
+    }
+
     loadeventdetection.get_loadeventdetection_analysis = function (req, res, next) {
         // String querys
         var id = req.swagger.params.energyhubid.value;
@@ -1243,14 +1274,14 @@
                     res.status(200).send(results);
                 }
             });
-        
+
         }
     };
 
-    loadeventdetection.delete_loadeventdetection_result = function (req, res, next) {
-        var id = req.swagger.params.resultsid.value;
+    loadeventdetection.get_loadeventdetection_status = function (req, res, next) {
+        var id = req.swagger.params.energyhubid.value;
         res.set("Content-Type", "application/json");
-        data.delete_loadeventdetection_results(id, function (err, results) {
+        data.check_loadeventdetection_status(id, function (err, results) {
             if (err) {
                 //Server error -> 500
                 var err_msg = {
@@ -1261,19 +1292,8 @@
                 res.status(500).send(err_msg);
             }
             else {
-                console.log(results.result);
-                var nrDeletedDocs = results.result.n;
-                var del_res = {
-                    "resultsid": id,
-                    "message": "The analysis was successfully deleted"
-                };
-                if (nrDeletedDocs <= 0) {
-                    del_res = {
-                        "resultsid": id,
-                        "message": "The analysis was not found, nothing was deleted"
-                    };
-                }
-                res.status(200).send(del_res);
+                console.log(results);
+                res.status(200).send(results);
             }
         });
     }

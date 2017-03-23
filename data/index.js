@@ -6,6 +6,17 @@
     /*LOCAL DATABASE*/
 
     // LOADEVENTDETECTION
+    data.check_loadeventdetection_status = function (energyhubid, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                // Check if there are pending jobs, jobstatus = 0
+                db.loadeventdetection_jobs.findOne({ energyhubid: energyhubid, jobstatus: 0 }, next);
+            }
+        });
+    }
 
     data.delete_loadeventdetection_results = function (resultsid, next) {
         database.getLocalDb(function (err, db) {
