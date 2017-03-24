@@ -264,7 +264,7 @@ paths:
     # our controller name
     x-swagger-router-controller: loadeventdetection
     get:
-      summary: The endpoint used to return a pending job for a specific energyhub 
+      summary: The endpoint used to list all pending jobs for a specific energyhub 
       description:  This endpoint is used for Load Event Detection
       operationId: get_loadeventdetection_status
       tags: [Load Event Detection]
@@ -273,6 +273,28 @@ paths:
       parameters:
         - $ref: "#/parameters/testQParam"
         - $ref: "#/parameters/energyhubidQParam"
+      responses:
+        200:
+          description: OK - Analysis list available.
+          schema:
+            $ref: '#/definitions/GenericAnalysisRequestArray'
+        500:
+          $ref: '#/responses/ErrorResponse500'
+        default:
+          $ref: '#/responses/DefaultErrorResponse'
+  /jobs:
+    # our controller name
+    x-swagger-router-controller: general
+    get:
+      summary: The endpoint used to list all pending jobs for a specific energyhub 
+      description:  This endpoint is used for Load Event Detection
+      operationId: get_status
+      tags: [General]
+      produces:
+        - application/json
+      parameters:
+        - $ref: "#/parameters/testQParam"
+        - $ref: "#/parameters/analysisTypeQParam"
       responses:
         200:
           description: OK - Analysis list available.
@@ -589,6 +611,14 @@ parameters:
     in: path
     description: ID of energyhub 
     required: true
+    type: string
+    
+  # Energyhubid
+  analysisTypeQParam:
+    name: analysistype
+    in: query
+    description: Filter by analysis type (POWERANALYSISDAY, POWERANALYSISHOURLY, DAILYTREND, LOADEVENTDETECTION)
+    required: false
     type: string
     
 responses:

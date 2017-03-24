@@ -5,7 +5,91 @@
 
     /*LOCAL DATABASE*/
 
+    // GENERAL
+    data.get_jobs = function (analysistype, next) {
+        database.getLocalDb(function (err, db) {
+            if (err) {
+                next(err);
+            }
+            else {
+                if (typeof analysistype !== 'undefined') {
+                    switch (analysistype.trim()) {
+                        case "POWERANALYSISDAY": 
+                            console.log('OK POWERANALYSISDAY');
+                            db.poweranalysisday_jobs.find({}).toArray(function (err, listResults) {
+                                if (err) {
+                                    next(err, null);
+                                }
+                                else {
+                                    next(null, listResults);
+                                }
+                            });
+                            break;
+                        
+                        case "POWERANALYSISHOURLY": 
+                            console.log('OK POWERANALYSISHOURLY');
+                            db.poweranalysishour_jobs.find({}).toArray(function (err, listResults) {
+                                if (err) {
+                                    next(err, null);
+                                }
+                                else {
+                                    next(null, listResults);
+                                }
+                            });
+                            break;
+                        
+                        case "LOADEVENTDETECTION": 
+                            console.log('OK LOADEVENTDETECTION');
+                            db.loadeventdetection_jobs.find({}).toArray(function (err, listResults) {
+                                if (err) {
+                                    next(err, null);
+                                }
+                                else {
+                                    next(null, listResults);
+                                }
+                            });
+                            break;
+                        
+                        default: 
+                            console.log('SOMETHING ELSE');
+                            break;
+                    }
+                }
+                else {
+                    console.log('List all jobs');
+                    //var allArray = [];
+                    
+                    //db.poweranalysisday_jobs.find({}).toArray(function (err, listResults) {
+                    //    if (err) {
+                    //        next(err, null);
+                    //    }
+                    //    else {
+                    //        return allArray.concat(listResults);
+                    //    }
+                    //}).then(db.poweranalysishour_jobs.find({}).toArray(function (err, listResults) {
+                    //    if (err) {
+                    //        next(err, null);
+                    //    }
+                    //    else {
+                    //        return allArray.concat(listResults);
+                    //    }
+                    //}).then(db.loadeventdetection_jobs.find({}).toArray(function (err, listResults) {
+                    //    if (err) {
+                    //        next(err, null);
+                    //    }
+                    //    else {
+                    //        return allArray.concat(listResults);
+                    //    }
+                    //}))).then(next(null, allArray));
+                }
+            }
+        });
+    };
+        
+    
+
     // LOADEVENTDETECTION
+    
     data.check_loadeventdetection_status = function (energyhubid, next) {
         database.getLocalDb(function (err, db) {
             if (err) {
@@ -401,7 +485,7 @@
             }
         });
     }
-
+    
     data.get_poweranalysisday_results = function (resultsid, next) {
         database.getLocalDb(function (err, db) {
             if (err) {

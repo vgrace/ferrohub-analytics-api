@@ -17,19 +17,19 @@
             histtype = "",
             isTest = false;
         if (req.swagger && req.swagger.body) {
-            energyhubid = req.swagger.body.energyhubid;
+            energyhubid = req.swagger.body.energyhubid.trim();
             starttime = req.swagger.body.starttime;
             endtime = req.swagger.body.endtime;
             userid = req.swagger.body.userid;
-            histtype = req.swagger.body.histtype; 
+            histtype = req.swagger.body.histtype.trim();
             isTest = req.swagger.params.test.value;
         }
         else {
-            energyhubid = req.body.energyhubid;
+            energyhubid = req.body.energyhubid.trim();
             starttime = req.body.starttime;
             endtime = req.body.endtime;
             userid = req.body.userid;
-            histtype = req.body.histtype; 
+            histtype = req.body.histtype.trim();
             isTest = typeof req.query.test === 'undefined' ? false : req.query.test !== "false";
         }
 
@@ -1137,7 +1137,7 @@
                     "histtype" : "scatter", "resultsid" : "e9fc980dd125264790c8177ff39bf2276e102b23", "jobstatus" : 0 }
         
         
-            res.status(200).send(loc_res);
+            res.status(200).send(test_sig);
         }
         else {
             //Mlabs: //getPowerAnalysisTrendResults,  local db: //get_loadeventdetection_results
@@ -1166,12 +1166,8 @@
                         res.status(404).send(not_found);
                     }
                     else {
-                        //var resultsData = JSON.parse(analysisResults.data);
-                        console.log(analysisResults);
                         var resultsData = analysisResults;
                         //Object found with results -> 200
-                        console.log('--------------'); 
-                        console.log(resultsData);
                         if (resultsData.data.message) {
                             if (resultsData.jobstatus === -1) {
                                 var errRes = {
@@ -1187,7 +1183,6 @@
                             var del_resultsid = delete resultsData.resultsid;
                             var del_jobstatus = delete resultsData.jobstatus;
                             var del_model = delete resultsData.analysismodel;
-                            console.log(del);
                             res.send(resultsData);
                         }
                         else {
@@ -1220,7 +1215,6 @@
                 res.status(500).send(err_msg);
             }
             else {
-                console.log(results.result);
                 var nrDeletedDocs = results.result.n;
                 var del_res = {
                     "resultsid": id,
@@ -1246,18 +1240,26 @@
         if (isTest) {
             var restest = [
                   {
-                      "energyhubid": "string",
-                      "starttime": "2017-03-22T16:11:53.542Z",
-                      "endtime": "2017-03-22T16:11:53.542Z",
-                      "userid": "string",
-                      "hello": "handsome"
+                      "energyhubid": id,
+                      "starttime": "2017-02-16T23:00:00.000Z",
+                      "endtime": "2017-02-22T23:00:00.000Z",
+                      "userid": "457",
+                      "histtype": "scatter",
+                      "resultsid": "f413cb636b9206d5b62eafc07cb3b441d6d2fa02",
+                      "analysismodel": "LOADEVENTDETECTION",
+                      "processingstatus": "PENDING",
+                      "resultslink": "http://dev.ferroamp.se/analytics/v0_1_3/loadeventdetection/f413cb636b9206d5b62eafc07cb3b441d6d2fa02"
                   },
                   {
-                      "energyhubid": "string",
-                      "starttime": "2017-03-22T16:11:53.542Z",
-                      "endtime": "2017-03-22T16:11:53.542Z",
-                      "userid": "string",
-                      "jobstatus": "pending"
+                      "energyhubid": id,
+                      "starttime": "2017-02-16T23:00:00.000Z",
+                      "endtime": "2017-02-22T23:00:00.000Z",
+                      "userid": "457",
+                      "histtype": "scatter",
+                      "resultsid": "f413cb636b9206d5b62eafc07cb3b441d6d2ds45",
+                      "analysismodel": "LOADEVENTDETECTION",
+                      "processingstatus": "PENDING",
+                      "resultslink": "http://dev.ferroamp.se/analytics/v0_1_3/loadeventdetection/f413cb636b9206d5b62eafc07cb3b441d6d2ds45"
                   }
             ];
             res.status(200).send(restest);
@@ -1274,7 +1276,6 @@
                     res.status(500).send(err_msg);
                 }
                 else {
-                    console.log(results);
                     res.status(200).send(results);
                 }
             });
@@ -1314,7 +1315,6 @@
                     res.status(500).send(err_msg);
                 }
                 else {
-                    console.log(results);
                     res.status(200).send(results);
                 }
             });
