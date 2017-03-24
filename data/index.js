@@ -14,7 +14,7 @@
             else {
                 // Check if there are pending jobs, jobstatus = 0
                 //db.loadeventdetection_jobs.findOne({ energyhubid: energyhubid, jobstatus: 0 }, next);
-                db.loadeventdetection_jobs.find({ energyhubid: energyhubid }).toArray(function (err, listResults) {
+                db.loadeventdetection_jobs.find({ energyhubid: energyhubid, jobstatus: 0 }).toArray(function (err, listResults) {
                     if (err) {
                         next(err, null);
                     }
