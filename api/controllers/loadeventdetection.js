@@ -1314,15 +1314,8 @@
                     res.status(500).send(err_msg);
                 }
                 else {
-                    if (results) {
-                        console.log("results not null");
-                        res.status(200).send(results);
-                    }
-                    else {
-                        console.log("results null");
-                        res.status(200).send({});
-                    }
-
+                    console.log(results);
+                    res.status(200).send(results);
                 }
             });
         }

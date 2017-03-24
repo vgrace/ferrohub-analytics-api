@@ -408,7 +408,7 @@
      "200": {
       "description": "OK - Analysis list available.",
       "schema": {
-       "$ref": "#/definitions/GenericAnalysisRequest"
+       "$ref": "#/definitions/GenericAnalysisRequestArray"
       }
      },
      "500": {
@@ -733,6 +733,14 @@
      }
     }
    }
+  },
+  "GenericAnalysisRequestArray": {
+   "type": "array",
+   "items": [
+    {
+     "$ref": "#/definitions/GenericAnalysisRequest"
+    }
+   ]
   },
   "GenericAnalysisRequest": {
    "type": "object",

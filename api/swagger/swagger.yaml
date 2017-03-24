@@ -277,7 +277,7 @@ paths:
         200:
           description: OK - Analysis list available.
           schema:
-            $ref: '#/definitions/GenericAnalysisRequest'
+            $ref: '#/definitions/GenericAnalysisRequestArray'
         500:
           $ref: '#/responses/ErrorResponse500'
         default:
@@ -488,7 +488,10 @@ definitions:
           
         
 # Common objects
-
+  GenericAnalysisRequestArray:
+    type: array
+    items:
+      - $ref: '#/definitions/GenericAnalysisRequest'
 
   GenericAnalysisRequest:
     type: object
