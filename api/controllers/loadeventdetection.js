@@ -61,17 +61,21 @@
                 "timestamp": new Date()
             };
 
-            //// TEST SAVE RESULTS
-            //var test_scat = {
-            //    "energyhubid": "string",
-            //    "starttime": "2016-11-17T10:09:40.401Z",
-            //    "endtime": "2016-11-17T10:09:40.401Z",
-            //    "userid": "string",
-            //    "resultsid": "asd",
-            //    "data": {}
-            //};
+            ////// TEST SAVE RESULTS
+            //var test_err_msg = {
+            //    "data": { "message": "(<class 'load_event_detection.AnalysisException'>, AnalysisException('Process chunk data exception. {}', Oct2PyError('Oct2Py tried to run:\\n\"\"\"\\nload /tmp/tmprpg_gb2u/writer.mat \"A__\" \"B__\"\\n\"\"\"\\nOctave returned:\\nParameter header:\\ndouble\\n\\n{\\n  [1,1] = Unix Time (s)\\n  [1,2] = phaseVoltage1\\n  [1,3] = phaseVoltage2\\n  [1,4] = phaseVoltage3\\n  [1,5] = inverterLineRmsCurrent1\\n  [1,6] = inverterLineRmsCurrent2\\n  [1,7] = inverterLineRmsCurrent3\\n  [1,8] = inverterLineQCurrent1\\n  [1,9] = inverterLineQCurrent2\\n  [1,10] = inverterLineQCurrent3\\n  [1,11] = inverterLineDCurrent1\\n  [1,12] = inverterLineDCurrent2\\n  [1,13] = inverterLineDCurrent3\\n  [1,14] = gridRmsCurrent1\\n  [1,15] = gridRmsCurrent2\\n  [1,16] = gridRmsCurrent3\\n  [1,17] = gridQCurrent1\\n  [1,18] = gridQCurrent2\\n  [1,19] = gridQCurrent3\\n  [1,20] = gridDCurrent1\\n  [1,21] = gridDCurrent2\\n  [1,22] = gridDCurrent3\\n}\\nParameter logData:\\ndouble\\n   1519     22\\n Columns 1 through 6:\\n\\n   1.4878e+09   2.4070e+02   2.4080e+02   2.4170e+02   7.0000e-01   7.0000e-01\\n\\n Columns 7 through 12:\\n\\n   7.0000e-01   1.0000e-01   1.0000e-01   1.0000e-01   8.0000e-01   9.0000e-01\\n\\n Columns 13 through 18:\\n\\n   9.0000e-01   1.1800e+01   9.6000e+00   1.4200e+01   1.5000e+01   1.1800e+01\\n\\n Columns 19 through 22:\\n\\n   1.8900e+01  -5.2000e+00  -5.9000e+00  -5.3000e+00\\nParameter header:\\ndouble\\n\\n{\\n  [1,1] = Unix Time (s)\\n  [1,2] = phaseVoltage1\\n  [1,3] = phaseVoltage2\\n  [1,4] = phaseVoltage3\\n  [1,5] = inverterLineRmsCurrent1\\n  [1,6] = inverterLineRmsCurrent2\\n  [1,7] = inverterLineRmsCurrent3\\n  [1,8] = inverterLineQCurrent1\\n  [1,9] = inverterLineQCurrent2\\n  [1,10] = inverterLineQCurrent3\\n  [1,11] = inverterLineDCurrent1\\n  [1,12] = inverterLineDCurrent2\\n  [1,13] = inverterLineDCurrent3\\n  [1,14] = gridRmsCurrent1\\n  [1,15] = gridRmsCurrent2\\n  [1,16] = gridRmsCurrent3\\n  [1,17] = gridQCurrent1\\n  [1,18] = gridQCurrent2\\n  [1,19] = gridQCurrent3\\n  [1,20] = gridDCurrent1\\n  [1,21] = gridDCurrent2\\n  [1,22] = gridDCurrent3\\n}\\nParameter logData:\\ndouble\\n   1519     22\\n Columns 1 through 6:\\n\\n   1.4878e+09   2.4070e+02   2.4080e+02   2.4170e+02   7.0000e-01   7.0000e-01\\n\\n Columns 7 through 12:\\n\\n   7.0000e-01   1.0000e-01   1.0000e-01   1.0000e-01   8.0000e-01   9.0000e-01\\n\\n Columns 13 through 18:\\n\\n   9.0000e-01   1.1800e+01   9.6000e+00   1.4200e+01   1.5000e+01   1.1800e+01\\n\\n Columns 19 through 22:\\n\\n   1.8900e+01  -5.2000e+00  -5.9000e+00  -5.3000e+00\\nwarning: Some missing data replaced with Equivalent values\\nerror: vertical dimensions mismatch (1x1 vs 1x256)\\nerror: called from:\\nerror:   /home/ubuntu/analysis_fuse/python-temp/mfiles/loadEvents_detection.m at line 78, column 4\\nerror:   /home/ubuntu/analysis_fuse/python-temp/mfiles/acelog_processLoadEvents.m at line 61, column 41',)), <traceback object at 0x7f8f2874b308>)" },
+            //    "energyhubid": "80",
+            //    "resultsid": "781e68ee035b2da29d7366629e5377be279459f0",
+            //    "starttime": "2017-02-16T00:00:00Z",
+            //    "analysismodel": "LOADEVENTDETECTION",
+            //    "histtype": "scatter",
+            //    "jobstatus": -1,
+            //    "timestamp": "2017-03-23T15:01:52.426Z",
+            //    "endtime": "2017-02-22T23:59:59.999Z",
+            //    "userid": null
+            //}
 
-            //data.addLoadEventResults(test_scat, function (err) {
+            //data.addLoadEventResults(test_err_msg, function (err) {
             //    if (err) {
             //        console.log("Error adding results");
             //        console.log(err);
@@ -1280,21 +1284,47 @@
 
     loadeventdetection.get_loadeventdetection_status = function (req, res, next) {
         var id = req.swagger.params.energyhubid.value;
+        var isTest = req.swagger.params.test.value === "" ? true : req.swagger.params.test.value;
         res.set("Content-Type", "application/json");
-        data.check_loadeventdetection_status(id, function (err, results) {
-            if (err) {
-                //Server error -> 500
-                var err_msg = {
-                    "code": 0,
-                    "message": "Internal Server Error: " + err,
-                    "fields": ""
-                };
-                res.status(500).send(err_msg);
-            }
-            else {
-                console.log(results);
-                res.status(200).send(results);
-            }
-        });
+        // TEST
+        if (isTest) {
+            var job_test = {
+                "_id": "58d3bdce7b6c0d3ab4c768ce",
+                "energyhubid": "TEST",
+                "starttime": "2017-03-23T12:21:25.831Z",
+                "endtime": "2017-03-23T12:21:25.831Z",
+                "userid": "TEST",
+                "histtype": "scatter",
+                "resultsid": "78dd4d1aa98ab7b0136acc284dd2dc6c71c8b0b9",
+                "analysismodel": "LOADEVENTDETECTION",
+                "jobstatus": 0,
+                "timestamp": "2017-03-23T12:21:34.106Z"
+            };
+            res.status(200).send(job_test);
+        }
+        else {
+            data.check_loadeventdetection_status(id, function (err, results) {
+                if (err) {
+                    //Server error -> 500
+                    var err_msg = {
+                        "code": 0,
+                        "message": "Internal Server Error: " + err,
+                        "fields": ""
+                    };
+                    res.status(500).send(err_msg);
+                }
+                else {
+                    if (results) {
+                        console.log("results not null");
+                        res.status(200).send(results);
+                    }
+                    else {
+                        console.log("results null");
+                        res.status(200).send({});
+                    }
+
+                }
+            });
+        }
     }
 })(module.exports);

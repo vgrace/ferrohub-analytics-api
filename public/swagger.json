@@ -683,11 +683,9 @@
   },
   "LoadEventDetectionAnalysisArray": {
    "type": "array",
-   "items": [
-    {
-     "$ref": "#/definitions/GenericAnalysisRequest"
-    }
-   ]
+   "items": {
+    "type": "object"
+   }
   },
   "ArrayOfFloats": {
    "type": "array",
