@@ -215,11 +215,58 @@
                 }
             });
 
-            //data.daily_listen({ "resultsid": resultsid, "jobstatus": 1 }, function (err, job_results) {
-            //    console.log("Listening...");
+            data.daily_listen({ "resultsid": resultsid, "jobstatus": 1 }, function (err, job_results) {
+                //console.log("Listening...");
+                if (err) {
+                    //console.log(err);
+                    var err_msg = {
+                        "code": 0,
+                        "message": err,
+                        "fields": ""
+                    };
+                    res.status(500).send(err_msg);
+                }
+                else {
+                    //console.log("The log stating there are results to retrieve");
+                    //console.log(job_results);
+                    var results_found = {
+                        "energyhubid": "Yay!",
+                        "starttime": "2016-10-21T09:18:29.977Z",
+                        "endtime": "2016-10-21T09:18:29.977Z",
+                        "userid": "string",
+                        "resultsid": "string",
+                        "analysismodel": "DAILYPOWER",
+                        "processingstatus": "PENDING",
+                        "resultslink": "string"
+                    };
+                    //res.status(201).send(results_found);
+                    data.get_poweranalysisday_results(resultsid, function (err, final_results) {
+                        if (err) {
+                            //console.log(err);
+                            var err_msg = {
+                                "code": 0,
+                                "message": err,
+                                "fields": ""
+                            };
+                            res.status(500).send(err_msg);
+                        }
+                        else {
+                            //console.log("Returning the results yao!");
+                            var del = delete final_results.value._id;
+                            var del_resultsid = delete final_results.value.resultsid;
+                            var del_jobstatus = delete final_results.value.jobstatus;
+                            var del_model = delete final_results.value.analysismodel;
+                            res.send(final_results.value);
+                        }
+                    });
+                }
+            });
 
+            //// Poll until there is results
+            //getResults(resultsid, polling);
+
+            //function polling(err, results) {
             //    if (err) {
-            //        //console.log(err);
             //        var err_msg = {
             //            "code": 0,
             //            "message": err,
@@ -229,72 +276,20 @@
             //        res.status(500).send(err_msg);
             //    }
             //    else {
-            //        console.log("The log stating there are results to retrieve");
-            //        console.log(job_results);
-
-            //        var results_found = {
-            //            "energyhubid": "Yay!",
-            //            "starttime": "2016-10-21T09:18:29.977Z",
-            //            "endtime": "2016-10-21T09:18:29.977Z",
-            //            "userid": "string",
-            //            "resultsid": "string",
-            //            "analysismodel": "DAILYPOWER",
-            //            "processingstatus": "PENDING",
-            //            "resultslink": "string"
-            //        };
-
-            //        //res.status(201).send(results_found);
-
-            //        data.get_poweranalysisday_results(resultsid, function (err, final_results) {
-            //            if (err) {
-            //                console.log(err);
-            //                var err_msg = {
-            //                    "code": 0,
-            //                    "message": err,
-            //                    "fields": ""
-            //                };
-            //                res.status(500).send(err_msg);
-            //            }
-            //            else {
-            //                console.log("Returning the results yao!");
-            //                var del = delete final_results.value._id;
-            //                var del_resultsid = delete final_results.value.resultsid;
-            //                var del_jobstatus = delete final_results.value.jobstatus;
-            //                var del_model = delete final_results.value.analysismodel;
-            //                res.send(final_results.value);
-            //            }
-            //        });
+            //        if (results.value === null) {
+            //            //No data yet call again
+            //            getResults(resultsid, polling);
+            //        }
+            //        else {
+            //            //Found data
+            //            var del = delete results.value._id;
+            //            var del_resultsid = delete results.value.resultsid;
+            //            var del_jobstatus = delete results.value.jobstatus;
+            //            var del_model = delete results.value.analysismodel;
+            //            res.send(results.value);
+            //        }
             //    }
-            //});
-
-            // Poll until there is results
-            getResults(resultsid, polling);
-
-            function polling(err, results) {
-                if (err) {
-                    var err_msg = {
-                        "code": 0,
-                        "message": err,
-                        "fields": ""
-                    };
-
-                    res.status(500).send(err_msg);
-                }
-                else {
-                    if (results.value === null) {
-                        //No data yet call again
-                        getResults(resultsid, polling);
-                    }
-                    else {
-                        //Found data
-                        var del = delete results.value._id;
-                        var del_resultsid = delete results.value.resultsid;
-                        var del_jobstatus = delete results.value.jobstatus;
-                        var del_model = delete results.value.analysismodel;
-                        res.send(results.value);
-                    }
-                }
-            }
+            //}
         }
     }
 
