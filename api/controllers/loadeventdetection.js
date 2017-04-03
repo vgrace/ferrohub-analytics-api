@@ -29,7 +29,7 @@
             starttime = req.body.starttime;
             endtime = req.body.endtime;
             userid = req.body.userid;
-            histtype = req.body.histtype.trim();
+            histtype = req.body.histtype ? req.body.histtype.trim() : req.body.histtype;
             isTest = typeof req.query.test === 'undefined' ? false : req.query.test !== "false";
         }
 

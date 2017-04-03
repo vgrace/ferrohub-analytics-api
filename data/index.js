@@ -57,6 +57,7 @@
                 }
                 else {
                     console.log('List all jobs');
+                    next('Not implemented yet', null); 
                     //var allArray = [];
                     
                     //db.poweranalysisday_jobs.find({}).toArray(function (err, listResults) {
@@ -180,13 +181,57 @@
     }
 
     // HOURLY
+
+    data.test_hourly_listen = function (filter) {
+        return new Promise((resolve, reject) => {
+            database.getLocalDb(function (err, db) {
+                if (err) {
+                    //next(err);
+                    return reject(err);
+                }
+                else {
+                    //console.log(filter);
+
+                    // set MongoDB cursor options
+                    var cursorOptions = {
+                        tailable: true,
+                        awaitdata: false,
+                        maxTimeMS: 60000,
+                        numberOfRetries: -1,
+                        tailableRetryInterval: 10000
+                    };
+
+                    var cursor = db.poweranalysishour_jobs_results.find();
+                    var stream = db.poweranalysishour_jobs_results.find(filter, cursorOptions).stream();
+                    stream.on('data', function (document) {
+                        // Close the cursor, this is the same as reseting the query
+                        cursor.close(function (err, result) {
+                            //assert.equal(null, err);
+                            if (err) {
+                                //next(err, null);
+                                return reject(err);
+                            }
+                            else {
+                                //console.log(document);
+                                //next(null, document);
+                                return resolve(document);
+                            }
+                            //db.close();
+                        });
+
+                    });
+                }
+            });
+        });
+    }
+
     data.hourly_listen = function (filter, next) {
         database.getLocalDb(function (err, db) {
             if (err) {
                 next(err);
             }
             else {
-                console.log(filter);
+                //console.log(filter);
 
                 // set MongoDB cursor options
                 var cursorOptions = {
@@ -207,7 +252,6 @@
                             next(err, null);
                         }
                         else {
-                            //console.log(document);
                             next(null, document);
                         }
                         //db.close();
@@ -245,6 +289,40 @@
     //    });
     //}
 
+    data.test_add_hourly_jobs = function (job) {
+        return new Promise((resolve, reject) => {
+            database.getLocalDb(function (err, db) {
+                if (err) {
+                    //next(err);
+                    return reject(err); 
+                }
+                else {
+                    //db.poweranalysishour_jobs.find({ energyhubid: job.energyhubid, jobstatus: 0 }).count().then(function (pendingJobs) {
+                    //    console.log(pendingJobs);
+                    //    if (pendingJobs > 0) {
+                    //        //next('TOO MANY REQUESTS');
+                    //        return reject('TOO MANY REQUESTS'); 
+                    //    }
+                    //    else {
+                            db.poweranalysishour_jobs.insert(job, function (err) {
+                                if (err) {
+                                    //next(err);
+                                    return reject(err);
+                                }
+                                else {
+                                    //next(null);
+                                    return resolve(null); 
+                                }
+                            });
+                        //}
+                    //});
+                }
+            });
+        })
+    }
+
+    
+
     data.add_poweranalysishour_jobs = function (job, next) {
         database.getLocalDb(function (err, db) {
             if (err) {
@@ -268,6 +346,27 @@
                     }
                 });
             }
+        });
+    }
+
+    data.test_get_hourly_restults = function (resultsid) {
+        return new Promise((resolve, reject) => {
+            database.getLocalDb(function (err, db) {
+                if (err) {
+                    //next(err);
+                    return reject(err); 
+                }
+                else {
+                    db.poweranalysishour_results.findOneAndDelete({ resultsid: resultsid }, function (err, results) {
+                        if (err) {
+                            return reject(err);
+                        }
+                        else {
+                            return resolve(results); 
+                        }
+                    });
+                }
+            });
         });
     }
 
