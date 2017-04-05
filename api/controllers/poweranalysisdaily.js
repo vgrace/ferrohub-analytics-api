@@ -6,302 +6,175 @@
 
     // POST /dailypower: operationId: get_daily_average_power
     poweranalysisdaily.make_poweranalysisdaily = function (req, res, next) {
-        // Generated resultsId
-        var resultsid = crypto.randomBytes(20).toString('hex');
-
-        // Input parameters
-        var energyhubid = "",
-            starttime = "",
-            endtime = "",
-            userid = "",
-            isTest = false,
-            nullanalysis = false;
-        if (req.swagger && req.swagger.body) {
-            energyhubid = req.swagger.body.energyhubid;
-            starttime = req.swagger.body.starttime;
-            endtime = req.swagger.body.endtime;
-            userid = req.swagger.body.userid;
-            isTest = req.swagger.params.test.value;
-        }
-        else {
-            energyhubid = req.body.energyhubid;
-            starttime = req.body.starttime;
-            endtime = req.body.endtime;
-            userid = req.body.userid;
-            isTest = typeof req.query.test === 'undefined' ? false : req.query.test !== "false";
-            nullanalysis = typeof req.query.nullanalysis === 'undefined' ? false : req.query.nullanalysis !== "false";
-        }
-
-        
-
-        //Express validator
-        req.assert('energyhubid', 'Invalid parameter: this parameter cannot be empty').notEmpty();
-        req.assert('starttime', 'Invalid parameter: this parameter cannot be empty').notEmpty();
-        req.assert('endtime', 'Invalid parameter: this parameter cannot be empty').notEmpty();
-        req.assert('userid', 'Invalid parameter: this parameter cannot be empty').notEmpty();
-
-        var errors = req.validationErrors();
-        if (errors) {
-            var errors_str = "";
-            for (var i = 0; i < errors.length; i++) {
-                //console.log(errors[i]);
-                errors_str += "# Parameter: " + errors[i].param + ", Message: " + errors[i].msg + ", Value: " + errors[i].value + "  ";
-            }
-            var cust_error = {
-                "code": 0,
-                "message": "Validation errors",
-                "fields": errors_str
-            };
-            res.status(400).send(cust_error);
-            return;
-        }
-        // NULLABLE BASELINE TEST
-        if (nullanalysis) {
-            //console.log("NULLABLE ON");
-            // Create job
-            var job = {
-                "energyhubid": energyhubid,
-                "starttime": new Date(starttime),
-                "endtime": new Date(endtime),
-                "userid": userid,
-                "resultsid": resultsid,
-                "analysismodel": "DAILYPOWER",
-                "jobstatus": 0,
-                "timestamp": new Date()
-            };
-
-            // Save job to local db
-            data.add_nullanalysis_jobs(job, function (err) {
-                if (err) {
-                    //console.log(err);
-                    var err_msg = {
-                        "code": 0,
-                        "message": err,
-                        "fields": ""
-                    };
-                    res.status(500).send(err_msg);
-                }
-                else {
-                    //console.log('Saved to local db');
-                }
-            });
-
-
-            data.nullable_listen({ "resultsid": resultsid, "jobstatus": 1 }, function (err, job_results) {
-                //console.log("Listening...");
-
-                if (err) {
-                    //console.log(err);
-                    var err_msg = {
-                        "code": 0,
-                        "message": err,
-                        "fields": ""
-                    };
-
-                    res.status(500).send(err_msg);
-                }
-                else {
-                    //console.log("The log stating there are results to retrieve");
-                    //console.log(job_results);
-
-                    var results_found = {
-                        "energyhubid": "Yay!",
-                        "starttime": "2016-10-21T09:18:29.977Z",
-                        "endtime": "2016-10-21T09:18:29.977Z",
-                        "userid": "string",
-                        "resultsid": "string",
-                        "analysismodel": "DAILYPOWER",
-                        "processingstatus": "PENDING",
-                        "resultslink": "string"
-                    };
-
-                    //res.status(201).send(results_found);
-
-                    data.get_nullanalysis_results(resultsid, function (err, final_results) {
-                        if (err) {
-                            //console.log(err);
-                            var err_msg = {
-                                "code": 0,
-                                "message": err,
-                                "fields": ""
-                            };
-                            res.status(500).send(err_msg);
-                        }
-                        else {
-                            //console.log("Returning the results yao!");
-                            var del = delete final_results.value._id;
-                            var del_resultsid = delete final_results.value.resultsid;
-                            var del_jobstatus = delete final_results.value.jobstatus;
-                            var del_model = delete final_results.value.analysismodel;
-                            final_results.value["returntimestamp"] = new Date()
-                            res.send(final_results.value);
-                            //console.log("Still here.. "); 
-                        }
-                    });
-                }
-            });
-        }
-        // TEST
-        else if (isTest) {
-            var analysis_job = {
-                "energyhubid": energyhubid,
-                "starttime": new Date(starttime),
-                "endtime": new Date(endtime),
-                "userid": userid,
-                "resultsid": resultsid,
-                "analysismodel": "DAILYPOWER",
-                "processingstatus": "PENDING",
-                "resultslink": "/poweranalysisday/" + resultsid
-            };
-
-            var analysis_results = {
-                "energyhubid": energyhubid,
-                "starttime": new Date(starttime),
-                "endtime": new Date(endtime),
-                "userid": userid,
-                //"resultsid": resultsid,
-                "data": seedData.getKwhData(seedData.ResultsDataArr, "DAY") //seedData.ResultsDataArr
-            };
-            data.test(function (err, results) {
-                if (err) {
-                    //console.log(err);
-                    var err_msg = {
-                        "code": 0,
-                        "message": err,
-                        "fields": ""
-                    };
-                    res.status(500).send(err_msg);
-                }
-                else {
-                    //console.log(results); 
-                    res.status(200).send(analysis_results);
-                    //console.log("Still here...");
-                }
-            })
-            //res.status(200).send(analysis_results);
-        }
-        // REAL (TEST = false)
-        else {
-            // Create job
-            var job = {
-                "energyhubid": energyhubid,
-                "starttime": new Date(starttime),
-                "endtime": new Date(endtime),
-                "userid": userid,
-                "resultsid": resultsid,
-                "analysismodel": "DAILYPOWER",
-                "jobstatus": 0,
-                "timestamp": new Date()
-            };
-
-            // Save job to local db
-            data.add_poweranalysisday_jobs(job, function (err) {
-                if (err) {
-                    //console.log(err);
-                    var err_msg = {
-                        "code": 0,
-                        "message": err,
-                        "fields": ""
-                    };
-                    if (err.indexOf('MANY') > 0) {
-                        res.status(429).send(err_msg);
-                    }
-                    else {
-                        res.status(500).send(err_msg);
-                    }
-                }
-                else {
-                    //console.log('Saved to local db');
-                }
-            });
-
-            //data.daily_listen({ "resultsid": resultsid, "jobstatus": 1 }, function (err, job_results) {
-            //    //console.log("Listening...");
-            //    if (err) {
-            //        //console.log(err);
-            //        var err_msg = {
-            //            "code": 0,
-            //            "message": err,
-            //            "fields": ""
-            //        };
-            //        res.status(500).send(err_msg);
-            //    }
-            //    else {
-            //        //console.log("The log stating there are results to retrieve");
-            //        //console.log(job_results);
-            //        var results_found = {
-            //            "energyhubid": "Yay!",
-            //            "starttime": "2016-10-21T09:18:29.977Z",
-            //            "endtime": "2016-10-21T09:18:29.977Z",
-            //            "userid": "string",
-            //            "resultsid": "string",
-            //            "analysismodel": "DAILYPOWER",
-            //            "processingstatus": "PENDING",
-            //            "resultslink": "string"
-            //        };
-            //        //res.status(201).send(results_found);
-            //        data.get_poweranalysisday_results(resultsid, function (err, final_results) {
-            //            if (err) {
-            //                //console.log(err);
-            //                var err_msg = {
-            //                    "code": 0,
-            //                    "message": err,
-            //                    "fields": ""
-            //                };
-            //                res.status(500).send(err_msg);
-            //            }
-            //            else {
-            //                //console.log("Returning the results yao!");
-            //                var del = delete final_results.value._id;
-            //                var del_resultsid = delete final_results.value.resultsid;
-            //                var del_jobstatus = delete final_results.value.jobstatus;
-            //                var del_model = delete final_results.value.analysismodel;
-            //                res.send(final_results.value);
-            //            }
-            //        });
-            //    }
-            //});
-
-            // Poll until there is results
-            getResults(resultsid, polling);
-
-            function polling(err, results) {
-                if (err) {
-                    var err_msg = {
-                        "code": 0,
-                        "message": err,
-                        "fields": ""
-                    };
-
-                    res.status(500).send(err_msg);
-                }
-                else {
-                    if (results.value === null) {
-                        //No data yet call again
-                        getResults(resultsid, polling);
-                    }
-                    else {
-                        //Found data
-                        var del = delete results.value._id;
-                        var del_resultsid = delete results.value.resultsid;
-                        var del_jobstatus = delete results.value.jobstatus;
-                        var del_model = delete results.value.analysismodel;
-                        res.send(results.value);
-                    }
-                }
-            }
-        }
-    }
-
-    function getResults(resultsId, next) {
-        data.get_poweranalysisday_results(resultsId, function (err, results) {
-            if (err) {
-                next(err, null);
+        try {
+            // Generated resultsId
+            var resultsid = crypto.randomBytes(20).toString('hex');
+            // Input parameters
+            var energyhubid = "",
+                starttime = "",
+                endtime = "",
+                userid = "",
+                isTest = false,
+                nullanalysis = false;
+            if (req.swagger && req.swagger.body) {
+                energyhubid = req.swagger.body.energyhubid;
+                starttime = req.swagger.body.starttime;
+                endtime = req.swagger.body.endtime;
+                userid = req.swagger.body.userid;
+                isTest = req.swagger.params.test.value;
             }
             else {
-                next(null, results);
+                energyhubid = req.body.energyhubid;
+                starttime = req.body.starttime;
+                endtime = req.body.endtime;
+                userid = req.body.userid;
+                isTest = typeof req.query.test === 'undefined' ? false : req.query.test !== "false";
+                //nullanalysis = typeof req.query.nullanalysis === 'undefined' ? false : req.query.nullanalysis !== "false";
             }
-        });
+            //Express validator
+            req.assert('energyhubid', 'Invalid parameter: this parameter cannot be empty').notEmpty();
+            req.assert('starttime', 'Invalid parameter: this parameter cannot be empty').notEmpty();
+            req.assert('endtime', 'Invalid parameter: this parameter cannot be empty').notEmpty();
+            req.assert('userid', 'Invalid parameter: this parameter cannot be empty').notEmpty();
+
+            var errors = req.validationErrors();
+            if (errors) {
+                var errors_str = "";
+                for (var i = 0; i < errors.length; i++) {
+                    //console.log(errors[i]);
+                    errors_str += "# Parameter: " + errors[i].param + ", Message: " + errors[i].msg + ", Value: " + errors[i].value + "  ";
+                }
+                var cust_error = {
+                    "code": 0,
+                    "message": "Validation errors",
+                    "fields": errors_str
+                };
+                res.status(400).send(cust_error);
+                return;
+            }
+
+            if (isTest) {
+                var analysis_job = {
+                    "energyhubid": energyhubid,
+                    "starttime": new Date(starttime),
+                    "endtime": new Date(endtime),
+                    "userid": userid,
+                    "resultsid": resultsid,
+                    "analysismodel": "DAILYPOWER",
+                    "processingstatus": "PENDING",
+                    "resultslink": "/poweranalysisday/" + resultsid
+                };
+
+                var analysis_results = {
+                    "energyhubid": energyhubid,
+                    "starttime": new Date(starttime),
+                    "endtime": new Date(endtime),
+                    "userid": userid,
+                    //"resultsid": resultsid,
+                    "data": seedData.getKwhData(seedData.ResultsDataArr, "DAY") //seedData.ResultsDataArr
+                };
+                data.test(function (err, results) {
+                    if (err) {
+                        var err_msg = {
+                            "code": 0,
+                            "message": err,
+                            "fields": ""
+                        };
+                        res.status(500).send(err_msg);
+                    }
+                    else {
+                        res.status(200).send(analysis_results);
+                    }
+                });
+            } else {
+                // REAL (TEST = false)
+                var stopRun = false;
+                // Create job
+                var job = {
+                    "energyhubid": energyhubid,
+                    "starttime": new Date(starttime),
+                    "endtime": new Date(endtime),
+                    "userid": userid,
+                    "resultsid": resultsid,
+                    "analysismodel": "DAILYPOWER",
+                    "jobstatus": 0,
+                    "timestamp": new Date()
+                };
+                // Save job to local db
+                data.p_add_poweranalysisday_jobs(job).then(jobres => {
+                    getResults(resultsid, polling);
+                    // Timeout set to 2 sec
+                    var timeOut = setTimeout(function () {
+                        console.log('Timer stop');
+                        stopRun = true;
+                        var err_msg = {
+                            "code": 0,
+                            "message": 'Timeout',
+                            "fields": ""
+                        };
+                        res.status(500).send(err_msg);
+                    }, 5000);
+                    function polling(err, results) {
+                        if (stopRun === false) {
+                            if (err) {
+                                var err_msg = {
+                                    "code": 0,
+                                    "message": err,
+                                    "fields": ""
+                                };
+                                clearTimeout(timeOut);
+                                res.status(500).send(err_msg);
+                            }
+                            else {
+                                if (results.value === null) {
+                                    //No data yet call again
+                                    getResults(resultsid, polling);
+                                }
+                                else {
+                                    //Found data
+                                    var del = delete results.value._id;
+                                    var del_resultsid = delete results.value.resultsid;
+                                    var del_jobstatus = delete results.value.jobstatus;
+                                    var del_model = delete results.value.analysismodel;
+                                    clearTimeout(timeOut);
+                                    res.send(results.value);
+                                }
+                            }
+                        }
+                    }
+                    function getResults(resultsId, next) {
+                        data.p_get_poweranalysisday_results(resultsId).then(results=> {
+                            next(null, results);
+                        }).catch(err=> {
+                            console.log(err);
+                            var cust_error = {
+                                "code": 0,
+                                "message": "Errors",
+                                "fields": err
+                            };
+                            clearTimeout(timeOut);
+                            res.status(400).send(cust_error);
+                        });
+                    }
+                }).catch(err => {
+                    var cust_error = {
+                        "code": 0,
+                        "message": "Errors",
+                        "fields": err
+                    };
+                    res.status(400).send(cust_error);
+                });
+            }
+        }
+        catch (e) {
+            var err_msg = {
+                "code": 0,
+                "message": e.message,
+                "fields": ""
+            };
+            console.log(err_msg);
+            res.status(500).send(err_msg);
+        }
     }
 
     // GET /dailypower/{resultsid}: operationId: get_poweranalysisdaily_result

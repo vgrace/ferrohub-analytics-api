@@ -559,6 +559,34 @@
     //    });
     //}
 
+    data.p_add_poweranalysisday_jobs = function (job) {
+        return new Promise((resolve, reject) => {
+            database.getLocalDb(function (err, db) {
+                if (err) {
+                    return reject(err);
+                }
+                else {
+                    db.poweranalysisday_jobs.find({ energyhubid: job.energyhubid, jobstatus: 0 }).count().then(function (pendingJobs) {
+                        console.log(pendingJobs);
+                        if (pendingJobs > 0) {
+                            return reject('TOO MANY REQUESTS');
+                        }
+                        else {
+                            db.poweranalysisday_jobs.insert(job, function (err) {
+                                if (err) {
+                                    return reject(err);
+                                }
+                                else {
+                                    return resolve(null);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        })
+    }
+
     data.add_poweranalysisday_jobs = function (job, next) {
         database.getLocalDb(function (err, db) {
             if (err) {
@@ -585,6 +613,26 @@
         });
     }
     
+    data.p_get_poweranalysisday_results = function (resultsid) {
+        return new Promise((resolve, reject) => {
+            database.getLocalDb(function (err, db) {
+                if (err) { 
+                    return reject(err);
+                }
+                else {
+                    db.poweranalysisday_results.findOneAndDelete({ resultsid: resultsid }, function (err, results) {
+                        if (err) {
+                            return reject(err);
+                        }
+                        else {
+                            return resolve(results);
+                        }
+                    });
+                }
+            });
+        });
+    }
+
     data.get_poweranalysisday_results = function (resultsid, next) {
         database.getLocalDb(function (err, db) {
             if (err) {

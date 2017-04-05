@@ -114,6 +114,7 @@
                                     "message": err,
                                     "fields": ""
                                 };
+                                clearTimeout(timeOut);
                                 res.status(500).send(err_msg);
                             }
                             else {
@@ -143,6 +144,7 @@
                                 "message": "Errors",
                                 "fields": err
                             };
+                            clearTimeout(timeOut);
                             res.status(400).send(cust_error);
                         });
                     }
