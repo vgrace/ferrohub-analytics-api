@@ -289,7 +289,7 @@
     //    });
     //}
 
-    data.test_add_hourly_jobs = function (job) {
+    data.p_add_poweranalysishour_jobs = function (job) {
         return new Promise((resolve, reject) => {
             database.getLocalDb(function (err, db) {
                 if (err) {
@@ -297,13 +297,13 @@
                     return reject(err); 
                 }
                 else {
-                    //db.poweranalysishour_jobs.find({ energyhubid: job.energyhubid, jobstatus: 0 }).count().then(function (pendingJobs) {
-                    //    console.log(pendingJobs);
-                    //    if (pendingJobs > 0) {
-                    //        //next('TOO MANY REQUESTS');
-                    //        return reject('TOO MANY REQUESTS'); 
-                    //    }
-                    //    else {
+                    db.poweranalysishour_jobs.find({ energyhubid: job.energyhubid, jobstatus: 0 }).count().then(function (pendingJobs) {
+                        console.log(pendingJobs);
+                        if (pendingJobs > 0) {
+                            //next('TOO MANY REQUESTS');
+                            return reject('TOO MANY REQUESTS'); 
+                        }
+                        else {
                             db.poweranalysishour_jobs.insert(job, function (err) {
                                 if (err) {
                                     //next(err);
@@ -314,8 +314,8 @@
                                     return resolve(null); 
                                 }
                             });
-                        //}
-                    //});
+                        }
+                    });
                 }
             });
         })
@@ -349,7 +349,7 @@
         });
     }
 
-    data.test_get_hourly_restults = function (resultsid) {
+    data.p_get_poweranalysishour_results = function (resultsid) {
         return new Promise((resolve, reject) => {
             database.getLocalDb(function (err, db) {
                 if (err) {

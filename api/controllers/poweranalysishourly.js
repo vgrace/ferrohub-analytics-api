@@ -75,9 +75,9 @@
                     "data": seedData.ResultsHourly
                 };
                 res.status(200).send(seedData.ResultsHourly);
-            }
+            } else {
                 // REAL (TEST = false)
-            else {
+                var stopRun = false;
                 // Create job
                 var job = {
                     "energyhubid": energyhubid,
@@ -88,21 +88,64 @@
                     "analysismodel": "HOURLYPOWER",
                     "jobstatus": 0,
                 };
-
-                /*data.test_add_hourly_jobs(job).then(jobres => {
-                    console.log(jobres);
-                    //res.send(job);
-                    data.test_hourly_listen({ "resultsid": resultsid, "jobstatus": 1 }).then(jobres2 => {
-                        console.log(jobres2);
-                        res.send(jobres2);
-                    }).catch(err => {
-                        var cust_error = {
+                // Save job 
+                data.p_add_poweranalysishour_jobs(job).then(jobres => {
+                    // Check results
+                    getResults(resultsid, polling);
+                    // Timeout set to 2 sec
+                    var timeOut = setTimeout(function () {
+                        console.log('Timer stop');
+                        stopRun = true;
+                        var err_msg = {
                             "code": 0,
-                            "message": "Errors",
-                            "fields": err
+                            "message": 'Timeout',
+                            "fields": ""
                         };
-                        res.status(400).send(cust_error);
-                    });
+                        res.status(500).send(err_msg);
+                    }, 5000);
+
+                    // Poll until there is results or timeout
+                    function polling(err, results) {
+                        if (stopRun === false) {
+                            if (err) {
+                                console.log(err);
+                                var err_msg = {
+                                    "code": 0,
+                                    "message": err,
+                                    "fields": ""
+                                };
+                                res.status(500).send(err_msg);
+                            }
+                            else {
+                                if (results.value === null) {
+                                    //No data yet call again
+                                    getResults(resultsid, polling);
+                                }
+                                else if (results.value !== null) {
+                                    //Found data
+                                    var del = delete results.value._id;
+                                    var del_resultsid = delete results.value.resultsid;
+                                    var del_jobstatus = delete results.value.jobstatus;
+                                    var del_model = delete results.value.analysismodel;
+                                    clearTimeout(timeOut);
+                                    res.send(results.value);
+                                }
+                            }
+                        }
+                    }
+                    // Get results
+                    function getResults(resultsId, next) {
+                        data.p_get_poweranalysishour_results(resultsid).then(results=> {
+                            next(null, results);
+                        }).catch(err => {
+                            var cust_error = {
+                                "code": 0,
+                                "message": "Errors",
+                                "fields": err
+                            };
+                            res.status(400).send(cust_error);
+                        });
+                    }
                 }).catch(err => {
                     var cust_error = {
                         "code": 0,
@@ -110,134 +153,18 @@
                         "fields": err
                     };
                     res.status(400).send(cust_error);
-                });*/
-
-                // Save job to local db
-                data.add_poweranalysishour_jobs(job, function (err) {
-                    if (err) {
-                        console.log(err);
-                        var err_msg = {
-                            "code": 0,
-                            "message": err,
-                            "fields": ""
-                        };
-                        if (err.indexOf('MANY') > 0) {
-                            res.status(429).send(err_msg);
-                        }
-                        else {
-                            res.status(500).send(err_msg);
-                        }
-                    }
-                    else {
-                        console.log('Saved to local db');
-                        //res.send(job); 
-                    }
                 });
-
-                //data.hourly_listen({ "resultsid": resultsid, "jobstatus": 1 }, function (err, job_results) {
-                //    console.log("Listening...");
-
-                //    if (err) {
-                //        console.log(err);
-                //        var err_msg = {
-                //            "code": 0,
-                //            "message": err,
-                //            "fields": ""
-                //        };
-
-                //        res.status(500).send(err_msg);
-                //    }
-                //    else {
-                //        console.log("The log stating there are results to retrieve");
-                //        console.log(job_results);
-
-                //        var results_found = {
-                //            "energyhubid": "Yay!",
-                //            "starttime": "2016-10-21T09:18:29.977Z",
-                //            "endtime": "2016-10-21T09:18:29.977Z",
-                //            "userid": "string",
-                //            "resultsid": "string",
-                //            "analysismodel": "HOURLYPOWER",
-                //            "processingstatus": "PENDING",
-                //            "resultslink": "string"
-                //        };
-
-                //        //res.status(201).send(results_found);
-
-                //        data.get_poweranalysishour_results(resultsid, function (err, final_results) {
-                //            if (err) {
-                //                console.log(err);
-                //                var err_msg = {
-                //                    "code": 0,
-                //                    "message": err,
-                //                    "fields": ""
-                //                };
-                //                res.status(500).send(err_msg);
-                //            }
-                //            else {
-                //                console.log("Returning the results yao!");
-                //                var del = delete final_results.value._id;
-                //                var del_resultsid = delete final_results.value.resultsid;
-                //                var del_jobstatus = delete final_results.value.jobstatus;
-                //                var del_model = delete final_results.value.analysismodel;
-                //                res.send(final_results.value);
-                //            }
-                //        });
-                //    }
-                //});
-
-                // Poll until there is results
-                getResults(resultsid, polling);
-
-                function polling(err, results) {
-                    if (err) {
-                        console.log(err);
-                        var err_msg = {
-                            "code": 0,
-                            "message": err,
-                            "fields": ""
-                        };
-
-                        res.status(500).send(err_msg);
-                    }
-                    else {
-                        if (results.value === null) {
-                            //No data yet call again
-                            console.log("No data yet, call again");
-                            getResults(resultsid, polling);
-                        }
-                        else {
-                            //Found data
-                            console.log("Data found");
-                            var del = delete results.value._id;
-                            var del_resultsid = delete results.value.resultsid;
-                            var del_jobstatus = delete results.value.jobstatus;
-                            var del_model = delete results.value.analysismodel;
-                            res.send(results.value);
-                        }
-                    }
-                }
             }
         }
-        catch (exc) {
-            return "Error caught"; 
+        catch (e) {
+            var err_msg = {
+                "code": 0,
+                "message": e.message,
+                "fields": ""
+            };
+            console.log(err_msg);
+            res.status(500).send(err_msg);
         }
-    }
-
-    function getResults(resultsId, next) {
-        //data.getPowerAnalysisResults(resultsId, function (err, results) {
-        data.get_poweranalysishour_results(resultsId, function (err, results) {
-            if (err) {
-                console.log("Error in getResults");
-                console.log(err);
-                next(err, null);
-            }
-            else {
-                console.log("No error");
-                console.log(results);
-                next(null, results);
-            }
-        });
     }
 
     // GET /hourlypower/{resultsid}: operationId: get_poweranalysishourly_result
