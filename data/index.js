@@ -3,6 +3,68 @@
     var seedData = require("./seedData");
     var database = require("./database");
 
+    //var mubsub = require('mubsub');
+    //var client = mubsub('mongodb://localhost:27017/analytics');
+    //data.test_mubsub = function (resultsid) {
+    //    var channel = client.channel('test');
+    //    client.on('error', console.error);
+    //    channel.on('error', console.error);
+    //    channel.subscribe(resultsid, function (results) {
+    //        console.log(results); // => 'bar'
+    //    });
+    //    //channel.subscribe('baz', function (message) {
+    //    //    console.log(message); // => 'baz'
+    //    //});
+    //    channel.publish(resultsid, {
+    //        "energyhubid": "123",
+    //        "userid": "456",
+    //        "endtime": "2017-04-03T09:56:01.578Z",
+    //        "jobstatus": 1,
+    //        "starttime": "2017-04-03T09:56:01.578Z",
+    //        "resultsid": resultsid,
+    //        "analysismodel": "HOURLYPOWER"
+    //    });
+    //    //channel.publish('baz', 'baz');
+    //}
+
+    var listen = require("../listen");
+    var client = listen('mongodb://localhost:27017/analytics');
+    var channel_poweranalysishour = client.channel('poweranalysishour_jobs_results');
+    var channel_poweranalysisday = client.channel('poweranalysisday_jobs_results');
+    data.poweranalysishour_listen = function (resultsid, next) {
+        try {
+            client.on('error', function () {
+                next('Error with connection to DB on power analysis hour', null);
+            });
+            channel_poweranalysishour.on('error', function () {
+                next('Error with power analysis hour channel on power analysis hour', null);
+            });
+            var subscription = channel_poweranalysishour.subscribe(resultsid, function (results) {
+                next(null, results);
+            });
+            
+        } catch (e) {
+            next(e, null); 
+        }
+    }
+
+    data.poweranalysisday_listen = function (resultsid, next) {
+        try {
+            client.on('error', function () {
+                next('Error with connection to DB on power analysis day', null);
+            });
+            channel_poweranalysisday.on('error', function () {
+                next('Error with power analysis hour channel on power analysis day', null);
+            });
+            var subscription = channel_poweranalysisday.subscribe(resultsid, function (results) {
+                next(null, results);
+            });
+        } catch (e) {
+            next(e, null); 
+        }
+    }
+
+    
     /*LOCAL DATABASE*/
 
     // GENERAL
@@ -87,8 +149,6 @@
         });
     };
         
-    
-
     // LOADEVENTDETECTION
     
     data.check_loadeventdetection_status = function (energyhubid, next) {
@@ -320,8 +380,6 @@
             });
         })
     }
-
-    
 
     data.add_poweranalysishour_jobs = function (job, next) {
         database.getLocalDb(function (err, db) {

@@ -102,7 +102,7 @@
                 };
                 // Save job to local db
                 data.p_add_poweranalysisday_jobs(job).then(jobres => {
-                    getResults(resultsid, polling);
+                    //getResults(resultsid, polling);
                     // Timeout set to 2 sec
                     var timeOut = setTimeout(function () {
                         console.log('Timer stop');
@@ -114,7 +114,7 @@
                         };
                         res.status(500).send(err_msg);
                     }, 5000);
-                    function polling(err, results) {
+                    data.poweranalysisday_listen(resultsid, function (err, resultsJob) {
                         if (stopRun === false) {
                             if (err) {
                                 var err_msg = {
@@ -126,36 +126,72 @@
                                 res.status(500).send(err_msg);
                             }
                             else {
-                                if (results.value === null) {
-                                    //No data yet call again
-                                    getResults(resultsid, polling);
-                                }
-                                else {
-                                    //Found data
-                                    var del = delete results.value._id;
-                                    var del_resultsid = delete results.value.resultsid;
-                                    var del_jobstatus = delete results.value.jobstatus;
-                                    var del_model = delete results.value.analysismodel;
+                                data.p_get_poweranalysisday_results(resultsid).then(results=> {
+                                    if (results.value !== null) {
+                                        //Found data
+                                        var del = delete results.value._id;
+                                        var del_resultsid = delete results.value.resultsid;
+                                        var del_jobstatus = delete results.value.jobstatus;
+                                        var del_model = delete results.value.analysismodel;
+                                        clearTimeout(timeOut);
+                                        res.send(results.value);
+                                    }
+                                }).catch(err=> {
+                                    console.log(err);
+                                    var cust_error = {
+                                        "code": 0,
+                                        "message": "Errors",
+                                        "fields": err
+                                    };
                                     clearTimeout(timeOut);
-                                    res.send(results.value);
-                                }
+                                    res.status(400).send(cust_error);
+                                });
                             }
                         }
-                    }
-                    function getResults(resultsId, next) {
-                        data.p_get_poweranalysisday_results(resultsId).then(results=> {
-                            next(null, results);
-                        }).catch(err=> {
-                            console.log(err);
-                            var cust_error = {
-                                "code": 0,
-                                "message": "Errors",
-                                "fields": err
-                            };
-                            clearTimeout(timeOut);
-                            res.status(400).send(cust_error);
-                        });
-                    }
+                    });
+
+                    //function polling(err, results) {
+                    //    if (stopRun === false) {
+                    //        if (err) {
+                    //            var err_msg = {
+                    //                "code": 0,
+                    //                "message": err,
+                    //                "fields": ""
+                    //            };
+                    //            clearTimeout(timeOut);
+                    //            res.status(500).send(err_msg);
+                    //        }
+                    //        else {
+                    //            if (results.value === null) {
+                    //                //No data yet call again
+                    //                getResults(resultsid, polling);
+                    //            }
+                    //            else {
+                    //                //Found data
+                    //                var del = delete results.value._id;
+                    //                var del_resultsid = delete results.value.resultsid;
+                    //                var del_jobstatus = delete results.value.jobstatus;
+                    //                var del_model = delete results.value.analysismodel;
+                    //                clearTimeout(timeOut);
+                    //                res.send(results.value);
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                    //function getResults(resultsId, next) {
+                    //    data.p_get_poweranalysisday_results(resultsId).then(results=> {
+                    //        next(null, results);
+                    //    }).catch(err=> {
+                    //        console.log(err);
+                    //        var cust_error = {
+                    //            "code": 0,
+                    //            "message": "Errors",
+                    //            "fields": err
+                    //        };
+                    //        clearTimeout(timeOut);
+                    //        res.status(400).send(cust_error);
+                    //    });
+                    //}
                 }).catch(err => {
                     var cust_error = {
                         "code": 0,
@@ -172,7 +208,6 @@
                 "message": e.message,
                 "fields": ""
             };
-            console.log(err_msg);
             res.status(500).send(err_msg);
         }
     }
